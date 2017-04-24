@@ -21,9 +21,16 @@ class KNNClassifier():
 
         return neighbors
 
-    def predicate(self,item):
+    def predicate(self,item, k):
         nearestk=self._findNearestNeighbor(item)
-        return nearestk[0]
+        res = {'N':0,'Y':0}
+        for vector in nearestk[:k]:
+            if vector[1] == '否':
+                res['N'] += 1
+            else:
+                res['Y'] += 1
+        print(res)
+        return nearestk[0][1]
 
 if __name__ == '__main__':
     dataload = DataLoad('watermelon30a.txt')
@@ -42,9 +49,10 @@ if __name__ == '__main__':
     plt.figure(1, facecolor='white')
     plt.scatter([x[0] for x in dataForClassOne], [x[1] for x in dataForClassOne], c = 'r')
     plt.scatter([x[0] for x in dataForClassTwo], [x[1] for x in dataForClassTwo], c = 'k')
-    print(knn.predicate([0.24, 0.39]))
+    K = 1
+    print(knn.predicate([0.24, 0.39], 5))
     plt.scatter([0.24], [0.39], c='g')
-    print(knn.predicate([0.53, 0.28]))
+    print(knn.predicate([0.53, 0.28], 5))
     plt.scatter([0.53], [0.28], c='y')
     plt.xlabel(u'密度', fontproperties='SimHei')
     plt.ylabel(u'含糖率', fontproperties='SimHei')
