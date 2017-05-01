@@ -1,68 +1,108 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import random
 
-# 最小二乘法
-def linefit( x,y):
-    N = len(x)
-    sx,sy,sxx,syy,sxy=0,0,0,0,0
-    for i in range(0,N):
-        sx  += x[i]
-        sy  += y[i]
-        sxx += x[i]*x[i]
-        syy += y[i]*y[i]
-        sxy += x[i]*y[i]
-    a = (sy*sx/N -sxy)/( sx*sx/N -sxx)
-    b = (sy - a*sx)/N
-    r = abs(sy*sx/N-sxy)/math.sqrt( (sxx-sx*sx/N)*(syy-sy*sy/N))
-    return a,b,r
+class LinearRegressionAlg(object):
+    def __init__(self, order, data):
+        self.order = order
+        self.data = data
 
-def create_hypothesis(theta1, theta0):
-    return lambda x: theta1*x + theta0
+    def LeastSquareMethod(self):
+        xa = [x[0] for x in self.data]
+        ya = [x[1] for x in self.data]
+        matA=[]
+        for i in range(0,self.order+1):
+            matA1=[]
+            for j in range(0,self.order+1):
+                tx=0.0
+                for k in range(0,len(xa)):
+                    dx=1.0
+                    for l in range(0,j+i):
+                        dx=dx*xa[k]
+                    tx+=dx
+                matA1.append(tx)
+            matA.append(matA1)
 
-# 梯度下降法
-def linear_regression(data, learning_rate=0.001, variance=0.00001):
-    theta0_guess = 1.
-    theta1_guess = 1.
-    theta0_last = 100.
-    theta1_last = 100.
+        matA=np.array(matA)
 
-    m = len(data)
+        matB=[]
+        for i in range(0,self.order+1):
+            ty=0.0
+            for k in range(0,len(xa)):
+                dy=1.0
+                for l in range(0,i):
+                    dy=dy*xa[k]
+                ty+=ya[k]*dy
+            matB.append(ty)
 
-    while (abs(theta1_guess-theta1_last) > variance or abs(theta0_guess - theta0_last) > variance):
+        matB=np.array(matB)
 
-        theta1_last = theta1_guess
-        theta0_last = theta0_guess
+        matAA=np.linalg.solve(matA,matB)
 
-        hypothesis = create_hypothesis(theta1_guess, theta0_guess)
+        return matAA
 
-        theta0_guess = theta0_guess - learning_rate * (1./m) * sum([ hypothesis(point[0]) - point[1] for point in data])
-        theta1_guess = theta1_guess - learning_rate * (1./m) * sum([ (hypothesis(point[0]) - point[1]) * point[0] for point in data])
+    def GradientDescentMethod(self, variance, learning_rate):
+        theta0_guess = 1.
+        theta1_guess = 1.
+        theta0_last = 100.
+        theta1_last = 100.
 
-    return ( theta0_guess,theta1_guess )
+        m = len(self.data)
+
+        while (abs(theta1_guess-theta1_last) > variance or abs(theta0_guess - theta0_last) > variance):
+
+            theta1_last = theta1_guess
+            theta0_last = theta0_guess
+
+            hypothesis = self.create_hypothesis(theta1_guess, theta0_guess)
+
+            theta0_guess = theta0_guess - learning_rate * (1./m) * sum([ hypothesis(point[0]) - point[1] for point in self.data])
+            theta1_guess = theta1_guess - learning_rate * (1./m) * sum([ (hypothesis(point[0]) - point[1]) * point[0] for point in self.data])
+
+        return ( theta0_guess,theta1_guess )
+
+    def create_hypothesis(self,theta1, theta0):
+        return lambda x: theta1*x + theta0
 
 if __name__ == '__main__':
-    x = np.arange(-2,2,0.1)
-    y = 2*x+np.random.random(len(x))
-    x = x.reshape((len(x),1))
-    y = y.reshape((len(x),1))
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    x = np.arange(-1,1,0.02)
+    y = [((a*a-1)*(a*a-1)*(a*a-1)+0.5)*np.sin(a*2) for a in x]
 
-    plt.figure(1, facecolor='white')
-    plt.scatter(x, y)
+    i=0
+    xa=[]
+    ya=[]
+    for xx in x:
+        yy=y[i]
+        d=float(random.randint(60,140))/100
+        i+=1
+        xa.append(xx*d)
+        ya.append(yy*d)
 
-    points = []
-    for i in range(len(x)):
-        points.append((float(x[i][0]), float(y[i][0])))
+    ax.plot(xa,ya,color='m',linestyle='',marker='.')
 
-    lineX = np.linspace(-2,2, 15)
-    fig = plt.subplot()
+    order = 9
+    data = []
+    for i in range(len(xa)):
+        data.append([xa[i], ya[i]])
 
-    b, a = linear_regression(points, 0.001, 0.00001)
-    y1 = a * lineX + b
+    alg = LinearRegressionAlg(order, data)
+    matAA = alg.LeastSquareMethod()
 
-    m, t,r = linefit(x, y)
-    y2 = m * lineX + t
+    xxa= np.arange(-1,1.06, 0.01)
+    yya=[]
+    for i in range(0,len(xxa)):
+        yy=0.0
+        for j in range(0,order+1):
+            dy=1.0
+            for k in range(0,j):
+                dy*=xxa[i]
+            dy*=matAA[j]
+            yy+=dy
+        yya.append(yy)
+    ax.plot(xxa,yya,color='g',linestyle='-',marker='')
 
-    fig.plot(lineX, y1, 'r--', lineX, y2, 'g--')
-
+    ax.legend()
     plt.show()
