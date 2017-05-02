@@ -43,27 +43,42 @@ class LinearRegressionAlg(object):
         return matAA
 
     def GradientDescentMethod(self, variance, learning_rate):
-        theta0_guess = 1.
-        theta1_guess = 1.
-        theta0_last = 100.
-        theta1_last = 100.
+        matAA_guess = [1] * (self.order + 1)
+        matAA_last = [100] * (self.order + 1)
 
         m = len(self.data)
 
-        while (abs(theta1_guess-theta1_last) > variance or abs(theta0_guess - theta0_last) > variance):
+        while (self.gradientDescentCheck(matAA_guess, matAA_last, variance) == True):
+            for index in range(len(matAA_guess)):
+                matAA_last[index] = matAA_guess[index]
 
-            theta1_last = theta1_guess
-            theta0_last = theta0_guess
+            for index in range(len(matAA_guess)):
+                hypothesis = self.create_hypothesis(matAA_guess, index)
+                matAA_guess[index] = matAA_guess[index] - learning_rate * (1./m) * hypothesis
 
-            hypothesis = self.create_hypothesis(theta1_guess, theta0_guess)
+        return matAA_guess
 
-            theta0_guess = theta0_guess - learning_rate * (1./m) * sum([ hypothesis(point[0]) - point[1] for point in self.data])
-            theta1_guess = theta1_guess - learning_rate * (1./m) * sum([ (hypothesis(point[0]) - point[1]) * point[0] for point in self.data])
+    def create_hypothesis(self,matAA_guess, index):
+        re = 0.0
+        for j in range(len(self.data)):
+            data = self.data[j]
+            s = 0.0
 
-        return ( theta0_guess,theta1_guess )
+            for i in range(len(matAA_guess)):
+                s += matAA_guess[i] * (data[0]**i)
 
-    def create_hypothesis(self,theta1, theta0):
-        return lambda x: theta1*x + theta0
+            re += (s - data[1]) * (data[0]**index)
+
+        return re
+
+    def gradientDescentCheck(self, matAA_guess, matAA_last, variance):
+        re = False
+        for i in range(len(matAA_guess)):
+            value = abs(matAA_guess[i] - matAA_last[i])
+            if (value > variance):
+                re = True
+                break
+        return re
 
 if __name__ == '__main__':
     fig = plt.figure()
@@ -90,7 +105,9 @@ if __name__ == '__main__':
 
     alg = LinearRegressionAlg(order, data)
     matAA = alg.LeastSquareMethod()
-
+    print(matAA)
+    matAA1 = alg.GradientDescentMethod(0.00001, 0.001)
+    print(matAA1)
     xxa= np.arange(-1,1.06, 0.01)
     yya=[]
     for i in range(0,len(xxa)):
@@ -102,7 +119,19 @@ if __name__ == '__main__':
             dy*=matAA[j]
             yy+=dy
         yya.append(yy)
-    ax.plot(xxa,yya,color='g',linestyle='-',marker='')
+
+    yya1=[]
+    for i in range(0,len(xxa)):
+        yy=0.0
+        for j in range(0,order+1):
+            dy=1.0
+            for k in range(0,j):
+                dy*=xxa[i]
+            dy*=matAA1[j]
+            yy+=dy
+        yya1.append(yy)
+
+    ax.plot(xxa,yya,'g--', xxa, yya1,'r--')
 
     ax.legend()
     plt.show()
