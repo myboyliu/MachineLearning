@@ -37,7 +37,7 @@ if __name__ == "__main__":
     warnings.filterwarnings(action='ignore', category=ConvergenceWarning)
     np.random.seed(0)
     np.set_printoptions(linewidth=1000)
-    N = 1
+    N = 9
     x = np.linspace(0, 6, N) + np.random.randn(N)
     x = np.sort(x)
     y = x**2 - 4*x - 3 + np.random.randn(N)
