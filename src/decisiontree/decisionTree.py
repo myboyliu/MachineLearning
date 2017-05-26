@@ -1,11 +1,9 @@
-import sys
-sys.path.append("..")
 import numpy as np
-from common.DataLoad import DataLoad
-import common.TreePlotter as tp
+import TreePlotter as tp
 import copy
 import re
 from math import log
+import pandas as pd
 
 class DecisionTree():
     """
@@ -397,9 +395,9 @@ if __name__ == '__main__':
     # columns = data.columns[1:-1].tolist()
     # dataTest = data.values[11:,1:].tolist()
 
-    dataLoad = DataLoad('watermelon20a.txt')
-    readData = dataLoad.getRawData()
-    columns = dataLoad.getColumns()
+    dataLoad = pd.read_csv('watermelon20a.txt')
+    readData = dataLoad.values[:, 1:].tolist()
+    columns = dataLoad.columns[1:-1].tolist()
     dataTest = []
 
     dt = DecisionTree(readData, columns,0, 0)
