@@ -1,12 +1,4 @@
-import numpy
-import sys
-sys.path.append("..")
-import random
-import math
-
-from common.DataLoad import DataLoad
-
-import csv
+import pandas as pd
 import random
 import math
 
@@ -87,12 +79,12 @@ def getAccuracy(testSet, predictions):
             correct += 1
     return (correct/float(len(testSet))) * 100.0
 
-def main():
+if __name__ == '__main__':
     filename = 'pima-indians.txt'
     splitRatio = 0.67
-    dataLoad = DataLoad(filename)
+    dataLoad = pd.read_csv(filename)
 
-    dataset = dataLoad.getfilerecord()
+    dataset = dataLoad.values[:, 1:].tolist()
     trainingSet, testSet = splitDataset(dataset, 0.9)
     print('---------')
     print('Split {0} rows into train={1} and test={2} rows'.format(len(dataset), len(trainingSet), len(testSet)))
@@ -105,19 +97,3 @@ def main():
     print('---------')
     predictions = getPredictions(summaries, testSet)
     print(predictions)
-
-    # accuracy = getAccuracy(testSet, predictions)
-    # print('Accuracy: {0}%'.format(accuracy))
-
-if __name__ == '__main__':
-    #main()
-    dataset = [[1,20,1], [2,21,1], [3,22,1], [4,22,0], [12, 24, 0]]
-    summaries = summarizeByClass(dataset)
-    print('Summary by class value: {0}'.format(summaries))
-    inputVector = [[2.0, 21.0], [8.0, 21.5]]
-   # result = predict(summaries, inputVector)
-    # print('Prediction: {0}'.format(result))
-    predictions = getPredictions(summaries, inputVector)
-    print(predictions)
-    accuracy = getAccuracy(inputVector, predictions)
-    print('Accuracy: {0}'.format(accuracy))
