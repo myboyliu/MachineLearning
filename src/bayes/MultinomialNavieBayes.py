@@ -1,8 +1,5 @@
 from numpy import *
-import sys
-sys.path.append("..")
-from common.DataLoad import DataLoad
-
+import pandas as pd
 
 class MultinomialNavieBayes():
     def __init__(self, data, alpha):
@@ -65,8 +62,8 @@ class MultinomialNavieBayes():
         return max(zip(P.values(),P.keys()))[1]
 
 if __name__ == '__main__':
-    dataLoad = DataLoad("weatherAndtennis.txt")
-    data = dataLoad.getRawData()
-    MNB = MultinomialNavieBayes(data, 1.0)
+    data = pd.read_csv("weatherAndtennis.txt")
+    rawData = data.values[:, 1:].tolist()
+    MNB = MultinomialNavieBayes(rawData, 1.0)
     MNB.trainNB()
     print(MNB.predicate(['Sunny', 'Cool', 'High', 'Strong']))
