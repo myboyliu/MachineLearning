@@ -75,15 +75,15 @@ if __name__ == "__main__":
     # 仅使用前两列特征
     x = x[:, :2]
     lr = Pipeline([('sc', StandardScaler()),
-                   ('poly', PolynomialFeatures(degree=2)),
+                   ('poly', PolynomialFeatures(degree=8)),
                    ('clf', LogisticRegression()) ])
     lr.fit(x, y.ravel())
     y_hat = lr.predict(x)
     y_hat_prob = lr.predict_proba(x)
     np.set_printoptions(suppress=True)
-    print 'y_hat = \n', y_hat
-    print 'y_hat_prob = \n', y_hat_prob
-    print u'准确度：%.2f%%' % (100*np.mean(y_hat == y.ravel()))
+    print('y_hat = \n', y_hat)
+    print('y_hat_prob = \n', y_hat_prob)
+    print(u'准确度：%.2f%%' % (100*np.mean(y_hat == y.ravel())))
     # 画图
     N, M = 500, 500     # 横纵各采样多少个值
     x1_min, x1_max = x[:, 0].min(), x[:, 0].max()   # 第0列的范围

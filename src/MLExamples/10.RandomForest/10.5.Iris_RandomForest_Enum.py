@@ -19,10 +19,10 @@ if __name__ == "__main__":
     mpl.rcParams['font.sans-serif'] = [u'SimHei']  # 黑体 FangSong/KaiTi
     mpl.rcParams['axes.unicode_minus'] = False
 
-    path = '..\\08.Regression\\iris.data'  # 数据文件路径
+    path = 'iris.data'  # 数据文件路径
     data = pd.read_csv(path, header=None)
-    x_prime = data[range(4)]
-    y = pd.Categorical(data[4]).codes
+    x_prime = data.values[:, :2]
+    y = pd.Categorical(data.values[:, -1:].tolist).codes
 
     feature_pairs = [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]]
     plt.figure(figsize=(10, 9), facecolor='#FFFFFF')
@@ -47,9 +47,9 @@ if __name__ == "__main__":
         y_hat = clf.predict(x)
         y = y.reshape(-1)
         c = np.count_nonzero(y_hat == y)    # 统计预测正确的个数
-        print '特征：  ', iris_feature[pair[0]], ' + ', iris_feature[pair[1]],
-        print '\t预测正确数目：', c,
-        print '\t准确率: %.2f%%' % (100 * float(c) / float(len(y)))
+        print('特征：  ', iris_feature[pair[0]], ' + ', iris_feature[pair[1]],)
+        print('\t预测正确数目：', c,)
+        print('\t准确率: %.2f%%' % (100 * float(c) / float(len(y))))
 
         # 显示
         cm_light = mpl.colors.ListedColormap(['#A0FFA0', '#FFA0A0', '#A0A0FF'])

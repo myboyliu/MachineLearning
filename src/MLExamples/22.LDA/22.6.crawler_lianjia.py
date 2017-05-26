@@ -73,7 +73,7 @@ if __name__ == '__main__':
                 info = infos[i] if len(infos) > i else None
                 info2 = infos2[i] if len(infos2) > i else None
                 if title:
-                    print 'Title: ', title.text
+                    print('Title: ', title.text)
                 if region:
                     region = region.text
                 if price:
@@ -106,7 +106,7 @@ if __name__ == '__main__':
                     info2 = info2[1]
                     year = info2[:info2.find('年')]
                     slab_tower = info2[info2.find('建')+1:]
-                print district_name, region, room_type, area, price, unit_price, tax, orientation, decoration, elevator, floor, year, slab_tower
+                print(district_name, region, room_type, area, price, unit_price, tax, orientation, decoration, elevator, floor, year, slab_tower)
                 writer.writerow([district_name, region, room_type, area, price, unit_price, tax, orientation, decoration, elevator, floor, year, slab_tower])
                 # break
             # break

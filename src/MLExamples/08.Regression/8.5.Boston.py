@@ -13,7 +13,7 @@ from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import mean_squared_error
 import warnings
-import exceptions
+# import exceptions
 
 
 def not_empty(s):
@@ -33,8 +33,8 @@ if __name__ == "__main__":
     # data = sklearn.datasets.load_boston()
     # x = np.array(data.data)
     # y = np.array(data.target)
-    print u'样本个数：%d, 特征个数：%d' % x.shape
-    print y.shape
+    print(u'样本个数：%d, 特征个数：%d' % x.shape)
+    print(y.shape)
     y = y.ravel()
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.7, random_state=0)
@@ -44,11 +44,11 @@ if __name__ == "__main__":
         ('linear', ElasticNetCV(l1_ratio=[0.1, 0.3, 0.5, 0.7, 0.99, 1], alphas=np.logspace(-3, 2, 5),
                                 fit_intercept=False, max_iter=1e3, cv=3))
     ])
-    print u'开始建模...'
+    print(u'开始建模...')
     model.fit(x_train, y_train)
     linear = model.get_params('linear')['linear']
-    print u'超参数：', linear.alpha_
-    print u'L1 ratio：', linear.l1_ratio_
+    print(u'超参数：', linear.alpha_)
+    print(u'L1 ratio：', linear.l1_ratio_)
     # print u'系数：', linear.coef_.ravel()
 
     order = y_test.argsort(axis=0)
@@ -57,8 +57,8 @@ if __name__ == "__main__":
     y_pred = model.predict(x_test)
     r2 = model.score(x_test, y_test)
     mse = mean_squared_error(y_test, y_pred)
-    print 'R2:', r2
-    print u'均方误差：', mse
+    print('R2:', r2)
+    print(u'均方误差：', mse)
 
     t = np.arange(len(y_pred))
     mpl.rcParams['font.sans-serif'] = [u'simHei']

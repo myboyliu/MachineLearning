@@ -283,24 +283,24 @@ if __name__ == "__main__":
 
     # 5.绘图
     # 5.1 绘制正态分布概率密度函数
-    # mpl.rcParams['font.sans-serif'] = [u'SimHei']  #FangSong/黑体 FangSong/KaiTi
-    # mpl.rcParams['axes.unicode_minus'] = False
-    # mu = 0
-    # sigma = 1
-    # x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, 51)
-    # y = np.exp(-(x - mu) ** 2 / (2 * sigma ** 2)) / (math.sqrt(2 * math.pi) * sigma)
-    # print(x.shape)
-    # print('x = \n', x)
-    # print(y.shape)
-    # print('y = \n', y)
-    # # plt.plot(x, y, 'ro-', linewidth=2)
-    # plt.figure(facecolor='w')
-    # plt.plot(x, y, 'r-', x, y, 'go', linewidth=2, markersize=8)
-    # plt.xlabel('X', fontsize=15)
-    # plt.ylabel('Y', fontsize=15)
-    # plt.title(u'高斯分布函数', fontsize=18)
-    # plt.grid(True)
-    # plt.show()
+    mpl.rcParams['font.sans-serif'] = [u'SimHei']  #FangSong/黑体 FangSong/KaiTi
+    mpl.rcParams['axes.unicode_minus'] = False
+    mu = 0
+    sigma = 1
+    x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, 51)
+    y = np.exp(-(x - mu) ** 2 / (2 * sigma ** 2)) / (math.sqrt(2 * math.pi) * sigma)
+    print(x.shape)
+    print('x = \n', x)
+    print(y.shape)
+    print('y = \n', y)
+    # plt.plot(x, y, 'ro-', linewidth=2)
+    plt.figure(facecolor='w')
+    plt.plot(x, y, 'r-', x, y, 'go', linewidth=2, markersize=8)
+    plt.xlabel('X', fontsize=15)
+    plt.ylabel('Y', fontsize=15)
+    plt.title(u'高斯分布函数', fontsize=18)
+    plt.grid(True)
+    plt.show()
 
     # # 5.2 损失函数：Logistic损失(-1,1)/SVM Hinge损失/ 0/1损失
     # x = np.array(np.linspace(start=-2, stop=3, num=1001, dtype=np.float))

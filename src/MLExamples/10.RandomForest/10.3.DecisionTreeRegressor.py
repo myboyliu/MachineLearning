@@ -11,9 +11,9 @@ if __name__ == "__main__":
     x = np.random.rand(N) * 6 - 3     # [-3,3)
     x.sort()
     y = np.sin(x) + np.random.randn(N) * 0.05
-    print y
+    print(y)
     x = x.reshape(-1, 1)  # 转置后，得到N个样本，每个样本都是1维的
-    print x
+    print(x)
 
     dt = DecisionTreeRegressor(criterion='mse', max_depth=9)
     dt.fit(x, y)

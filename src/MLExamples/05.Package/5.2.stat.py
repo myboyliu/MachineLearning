@@ -32,7 +32,7 @@ def calc_statistics(x):
     sigma = np.sqrt(m2 - mu*mu)
     skew = (m3 - 3*mu*m2 + 2*mu**3) / sigma**3
     kurtosis = (m4 - 4*mu*m3 + 6*mu*mu*m2 - 4*mu**3*mu + mu**4) / sigma**4 - 3
-    print '手动计算均值、标准差、偏度、峰度：', mu, sigma, skew, kurtosis
+    print('手动计算均值、标准差、偏度、峰度：', mu, sigma, skew, kurtosis)
 
     # 使用系统函数验证
     mu = np.mean(x, axis=0)
@@ -44,9 +44,9 @@ def calc_statistics(x):
 
 if __name__ == '__main__':
     d = np.random.randn(100000)
-    print d
+    print(d)
     mu, sigma, skew, kurtosis = calc_statistics(d)
-    print '函数库计算均值、标准差、偏度、峰度：', mu, sigma, skew, kurtosis
+    print('函数库计算均值、标准差、偏度、峰度：', mu, sigma, skew, kurtosis)
     # 一维直方图
     mpl.rcParams[u'font.sans-serif'] = 'SimHei'
     mpl.rcParams[u'axes.unicode_minus'] = False
@@ -60,12 +60,12 @@ if __name__ == '__main__':
 
     d = np.random.randn(100000, 2)
     mu, sigma, skew, kurtosis = calc_statistics(d)
-    print '函数库计算均值、标准差、偏度、峰度：', mu, sigma, skew, kurtosis
+    print('函数库计算均值、标准差、偏度、峰度：', mu, sigma, skew, kurtosis)
 
     # 二维图像
     N = 30
     density, edges = np.histogramdd(d, bins=[N, N])
-    print '样本总数：', np.sum(density)
+    print('样本总数：', np.sum(density))
     density /= density.max()
     x = y = np.arange(N)
     t = np.meshgrid(x, y)

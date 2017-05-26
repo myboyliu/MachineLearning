@@ -8,13 +8,12 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import Lasso, Ridge
 from sklearn.model_selection import GridSearchCV
-
+import random
 
 if __name__ == "__main__":
     # pandas读入
     data = pd.read_csv('Advertising.csv')    # TV、Radio、Newspaper、Sales
-    x = data[['TV', 'Radio', 'Newspaper']]
-    # x = data[['TV', 'Radio']]
+    x = data[['TV','Radio','Newspaper']]
     y = data['Sales']
     print(x)
     print(y)
@@ -25,7 +24,7 @@ if __name__ == "__main__":
     alpha_can = np.logspace(-3, 2, 10)
     np.set_printoptions(suppress=True)
     print('alpha_can = ', alpha_can)
-    lasso_model = GridSearchCV(model, param_grid={'alpha': alpha_can}, cv=5)
+    lasso_model = GridSearchCV(model, param_grid={'alpha': alpha_can}, cv=10)
     lasso_model.fit(x_train, y_train)
     print('超参数：\n', lasso_model.best_params_)
 

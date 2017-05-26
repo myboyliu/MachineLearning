@@ -1,7 +1,5 @@
 import numpy as np
-import sys
-sys.path.append("..")
-from common.DataLoad import DataLoad
+import pandas as pd
 
 class GarbageEmailClassifier():
     def __init__(self, data):
@@ -10,6 +8,7 @@ class GarbageEmailClassifier():
     def createVocabList(self):
         vocabSet = set([])
         for document in self.data:
+            print(document)
             vocabSet = vocabSet | set(document)
 
         return list(vocabSet)
@@ -53,16 +52,23 @@ class GarbageEmailClassifier():
             return 0
 
 if __name__ == '__main__':
-    dataLoad = DataLoad('ge.txt')
-    data = dataLoad.getfiledata()
-    ge = GarbageEmailClassifier(data[0])
+    data = []
+    labels = []
+
+    with open("ge.txt") as ifile:
+        for line in ifile:
+            tokens = line.strip().split(',')
+            data.append(tokens[:-1])
+            labels.append(tokens[-1])
+
+    ge = GarbageEmailClassifier(data)
     myVocabList = ge.createVocabList() # 全单词表
     print(myVocabList)
     trainMat = []
-    for postingDoc in data[0]:
+    for postingDoc in data:
         trainMat.append(ge.seteOfWords2Vec(myVocabList, postingDoc))
     print(trainMat)
-    p0V, p1V, pAb = ge.trainNB0(np.array(trainMat), [float(x) for x in data[1]])
+    p0V, p1V, pAb = ge.trainNB0(np.array(trainMat), [float(x) for x in labels])
 
     testEntry = ['love', 'my', 'dalmation']
 

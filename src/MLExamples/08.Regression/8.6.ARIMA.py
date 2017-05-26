@@ -25,13 +25,13 @@ if __name__ == '__main__':
 
     data = pd.read_csv('AirPassengers.csv', header=0, parse_dates=['Month'], date_parser=date_parser, index_col=['Month'])
     data.rename(columns={'#Passengers': 'Passengers'}, inplace=True)
-    print data.dtypes
+    print(data.dtypes)
     mpl.rcParams['font.sans-serif'] = [u'SimHei']
     mpl.rcParams['axes.unicode_minus'] = False
 
     x = data['Passengers'].astype(np.float)
     x = np.log(x)
-    print x.head(10)
+    print(x.head(10))
 
     show = 'prime'   # 'diff', 'ma', 'prime'
     d = 1
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     model = ARIMA(endog=x, order=(p, d, q))     # 自回归函数p,差分d,移动平均数q
     arima = model.fit(disp=-1)                  # disp<0:不输出过程
     prediction = arima.fittedvalues
-    print type(prediction)
+    print(type(prediction))
     y = prediction.cumsum() + x[0]
     mse = ((x - y)**2).mean()
     rmse = np.sqrt(mse)
