@@ -1,7 +1,5 @@
 from numpy import *
-import sys
-sys.path.append("..")
-from common.DataLoad import DataLoad
+import pandas as pd
 
 class GaussNavieBayes:
     def __init__(self, data, alpha):
@@ -66,9 +64,9 @@ class GaussNavieBayes:
         return (1 / (math.sqrt(2*math.pi) * stdev)) * exponent
 
 if __name__ == '__main__':
-    dataLoad = DataLoad("xingbie.txt")
-    data = dataLoad.getRawData()
+    data = pd.read_csv("xingbie.txt")
+    rawData = data.values[:, 1:].tolist()
 
-    GNB = GaussNavieBayes(data, 0.0)
+    GNB = GaussNavieBayes(rawData, 0.0)
     GNB.trainNB()
     print(GNB.predicate([6,130, 8]))
