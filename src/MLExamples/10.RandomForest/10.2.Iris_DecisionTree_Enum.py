@@ -17,15 +17,19 @@ if __name__ == "__main__":
 
     path = 'iris.data'  # 数据文件路径
     data = pd.read_csv(path, header=None)
-    x_prime = data.values[:,:4]
-    y = data.values[:, -1:]
-    y = np.array([x[0] for x in y])
+    x_prime = data.values[:,:2]
+    y_prime =data.values[:,-1:]
+    YY = []
+    for index, vec in enumerate(y_prime):
+        YY.append(vec[0])
 
+    y_prime = pd.Categorical(YY).codes
     feature_pairs = [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]]
     plt.figure(figsize=(10, 9), facecolor='#FFFFFF')
     for i, pair in enumerate(feature_pairs):
         # 准备数据
         x = x_prime[pair]
+        y = y_prime[pair]
 
         # 决策树学习
         clf = DecisionTreeClassifier(criterion='entropy', min_samples_leaf=3)
@@ -33,10 +37,14 @@ if __name__ == "__main__":
 
         # 画图
         N, M = 500, 500  # 横纵各采样多少个值
-        x1_min, x2_min = x.min()
-        x1_max, x2_max = x.max()
+        x1_min = x.min()
+        x2_min = x.min()
+        x1_max = x.max()
+        x2_max = x.max()
+
         t1 = np.linspace(x1_min, x1_max, N)
         t2 = np.linspace(x2_min, x2_max, M)
+
         x1, x2 = np.meshgrid(t1, t2)  # 生成网格采样点
         x_test = np.stack((x1.flat, x2.flat), axis=1)  # 测试点
 
@@ -54,8 +62,9 @@ if __name__ == "__main__":
         y_hat = clf.predict(x_test)  # 预测值
         y_hat = y_hat.reshape(x1.shape)  # 使之与输入的形状相同
         plt.subplot(2, 3, i+1)
+
         plt.pcolormesh(x1, x2, y_hat, cmap=cm_light)  # 预测值
-        plt.scatter(x[pair[0]], x[pair[1]], c=y, edgecolors='k', cmap=cm_dark)  # 样本
+        plt.scatter(x_prime[pair[0]], x_prime[pair[1]], c=y, edgecolors='k', cmap=cm_dark)  # 样本
         plt.xlabel(iris_feature[pair[0]], fontsize=14)
         plt.ylabel(iris_feature[pair[1]], fontsize=14)
         plt.xlim(x1_min, x1_max)

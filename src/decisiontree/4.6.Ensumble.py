@@ -5,25 +5,30 @@ import operator
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-
+from functools import reduce
 
 def c(n, k):
-    return np.reduce(operator.mul, range(n-k+1, n+1)) / np.reduce(operator.mul, range(1, k+1))
+    len1 = n - k + 1
+    len2 = n + 1
+    len3 = k + 1
+    c1 = reduce(operator.mul, range(len1, len2))
+    c2 = reduce(operator.mul, range(1, len3))
+    return  c1 / c2;
 
 
 def bagging(n, p):
     s = 0
-    for i in range(n / 2 + 1, n + 1):
+    for i in range(int(n / 2 + 1), int(n + 1)):
         s += c(n, i) * p ** i * (1 - p) ** (n - i)
     return s
 
 
 if __name__ == "__main__":
-    n = 100
-    x = np.arange(1.0, n, 2.0)
+    n = 800
+    x = np.arange(1, n, 2)
     y = np.empty_like(x, dtype=np.float)
     for i, t in enumerate(x):
-        y[i] = bagging(t, 0.6)
+        y[i] = bagging(t, 0.55)
         if t % 10 == 9:
             print(t, '次采样正确率：', y[i])
     mpl.rcParams[u'font.sans-serif'] = u'SimHei'

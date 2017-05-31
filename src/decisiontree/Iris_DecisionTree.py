@@ -51,7 +51,6 @@ if __name__ == "__main__":
     f.close()
     # 画图
     N, M = 50, 50  # 横纵各采样多少个值
-    print(x.min())
     x1_min = x.min()
     x2_min = x.min()
     x1_max = x.max()
@@ -60,18 +59,15 @@ if __name__ == "__main__":
     t2 = np.linspace(x2_min, x2_max, M)
     x1, x2 = np.meshgrid(t1, t2)  # 生成网格采样点
     x_show = np.stack((x1.flat, x2.flat), axis=1)  # 测试点
-    print(x_show.shape)
 
     cm_light = mpl.colors.ListedColormap(['#A0FFA0', '#FFA0A0', '#A0A0FF'])
     cm_dark = mpl.colors.ListedColormap(['g', 'r', 'b'])
     y_show_hat = model.predict(x_show)  # 预测值
-    print(y_show_hat.shape)
-    print(y_show_hat)
     y_show_hat = y_show_hat.reshape(x1.shape)  # 使之与输入的形状相同
-    print(y_show_hat)
     plt.figure(facecolor='w')
+    print(y_show_hat)
     plt.pcolormesh(x1, x2, y_show_hat, cmap=cm_light)  # 预测值的显示
-    plt.scatter(x_test[0], x_test[1], c='#FF00FE', edgecolors='k', s=150, zorder=10, cmap=cm_dark, marker='*')  # 测试数据
+    plt.scatter(x_test[0], x_test[1], c='#FFFFFF', edgecolors='k', s=150, zorder=10, cmap=cm_dark, marker='*')  # 测试数据
     plt.scatter(x[0], x[1], c='#00FFEE', edgecolors='k', s=40, cmap=cm_dark)  # 全部数据
     plt.xlabel(iris_feature[0], fontsize=15)
     plt.ylabel(iris_feature[1], fontsize=15)

@@ -21,18 +21,23 @@ if __name__ == "__main__":
 
     path = 'iris.data'  # 数据文件路径
     data = pd.read_csv(path, header=None)
-    x_prime = data.values[:, :2]
-    y = pd.Categorical(data.values[:, -1:].tolist).codes
+    x_prime = data.values[:, :4]
+    YY = []
+    y =data.values[:,-1:]
+    for index, vec in enumerate(y):
+        YY.append(vec[0])
+
+    y_prime = pd.Categorical(YY).codes
 
     feature_pairs = [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]]
     plt.figure(figsize=(10, 9), facecolor='#FFFFFF')
     for i, pair in enumerate(feature_pairs):
         # 准备数据
         x = x_prime[pair]
-
+        y = y_prime[pair]
         # 随机森林
         clf = RandomForestClassifier(n_estimators=200, criterion='entropy', max_depth=3)
-        clf.fit(x, y.ravel())
+        clf.fit(x, y)
 
         # 画图
         N, M = 50, 50  # 横纵各采样多少个值
