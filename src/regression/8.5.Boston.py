@@ -24,15 +24,12 @@ if __name__ == "__main__":
     warnings.filterwarnings(action='ignore')
     np.set_printoptions(suppress=True)
     file_data = pd.read_csv('housing.data', header=None)
-    # a = np.array([float(s) for s in str if s != ''])
     data = np.empty((len(file_data), 14))
     for i, d in enumerate(file_data.values):
         d = map(float, filter(not_empty, d[0].split(' ')))
         data[i] = d
     x, y = np.split(data, (13, ), axis=1)
-    # data = sklearn.datasets.load_boston()
-    # x = np.array(data.data)
-    # y = np.array(data.target)
+
     print(u'样本个数：%d, 特征个数：%d' % x.shape)
     print(y.shape)
     y = y.ravel()

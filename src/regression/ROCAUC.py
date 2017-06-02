@@ -51,8 +51,8 @@ if __name__ == '__main__':
     tpr_ /= n_class
     tpr['macro'] = tpr_
     auc[n_class+1] = metrics.auc(fpr['macro'], tpr['macro'])
-    print auc
-    print 'Macro AUC:', metrics.roc_auc_score(y, y_score, average='macro')
+    print(auc)
+    print('Macro AUC:', metrics.roc_auc_score(y, y_score, average='macro'))
     plt.plot(fpr['macro'], tpr['macro'], c='m', lw=2, alpha=0.8, label=u'macro，AUC=%.3f' % auc[n_class+1])
     plt.plot((0, 1), (0, 1), c='#808080', lw=1.5, ls='--', alpha=0.7)
     plt.xlim((-0.01, 1.02))

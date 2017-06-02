@@ -5,7 +5,6 @@ import numpy as np
 from statsmodels.tsa.arima_model import ARIMA
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 import warnings
 from statsmodels.tools.sm_exceptions import HessianInversionWarning
 
