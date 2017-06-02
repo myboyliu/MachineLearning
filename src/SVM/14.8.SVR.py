@@ -12,19 +12,19 @@ if __name__ == "__main__":
     x = np.sort(np.random.uniform(0, 6, N), axis=0)
     y = 2*np.sin(x) + 0.1*np.random.randn(N)
     x = x.reshape(-1, 1)
-    print 'x =\n', x
-    print 'y =\n', y
+    print('x =\n', x)
+    print('y =\n', y)
 
-    print 'SVR - RBF'
+    print('SVR - RBF')
     svr_rbf = svm.SVR(kernel='rbf', gamma=0.2, C=100)
     svr_rbf.fit(x, y)
-    print 'SVR - Linear'
+    print('SVR - Linear')
     svr_linear = svm.SVR(kernel='linear', C=100)
     svr_linear.fit(x, y)
-    print 'SVR - Polynomial'
+    print('SVR - Polynomial')
     svr_poly = svm.SVR(kernel='poly', degree=3, C=100)
     svr_poly.fit(x, y)
-    print 'Fit OK.'
+    print('Fit OK.')
 
     # 思考：系数1.1改成1.5
     x_test = np.linspace(x.min(), 1.1*x.max(), 100).reshape(-1, 1)
