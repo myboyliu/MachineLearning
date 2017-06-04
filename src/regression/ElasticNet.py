@@ -60,14 +60,8 @@ if __name__ == "__main__":
     d_pool = np.arange(1, N, 1)  # 阶
     m = d_pool.size
     clrs = []  # 颜色
-    clrs.append('#ff3300')
-    clrs.append('#ff0066')
-    clrs.append('#996633')
-    clrs.append('#F4A460')
-    clrs.append('#6E8B3D')
-    clrs.append('#1A1A1A')
-    clrs.append('#98FB98')
-    clrs.append('#9A32CD')
+    for c in np.linspace(16711680, 255, N):
+        clrs.append("#{:06X}".format(int(c), 2))
     line_width = np.linspace(5, 2, m)
     titles = u'线性回归', u'Ridge回归', u'LASSO', u'ElasticNet'
     tss_list = []
