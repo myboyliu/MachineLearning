@@ -315,7 +315,7 @@ if __name__ == "__main__":
     # # plt.plot(x, y_boost, 'm--', label='Adaboost Loss', linewidth=2)
     # plt.grid()
     # plt.legend(loc='upper right')
-    # # plt.savefig('1.png')
+    # # plt.savefig('02.png')
     # plt.show()
 
     # 5.3 x^x

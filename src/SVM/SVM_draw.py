@@ -45,10 +45,10 @@ if __name__ == "__main__":
         show_accuracy(y_hat, y)  # 准确率
 
         # 画图
-        print title
-        print '支撑向量的数目：', clf.n_support_
-        print '支撑向量的系数：', clf.dual_coef_
-        print '支撑向量：', clf.support_
+        print(title)
+        print('支撑向量的数目：', clf.n_support_)
+        print('支撑向量的系数：', clf.dual_coef_)
+        print('支撑向量：', clf.support_)
         plt.subplot(3, 4, i+1)
         grid_hat = clf.predict(grid_test)       # 预测分类值
         grid_hat = grid_hat.reshape(x1.shape)  # 使之与输入的形状相同
@@ -57,8 +57,8 @@ if __name__ == "__main__":
         plt.scatter(x[clf.support_, 0], x[clf.support_, 1], edgecolors='k', facecolors='none', s=100, marker='o')   # 支撑向量
         z = clf.decision_function(grid_test)
         # print 'z = \n', z
-        print 'clf.decision_function(x) = ', clf.decision_function(x)
-        print 'clf.predict(x) = ', clf.predict(x)
+        print('clf.decision_function(x) = ', clf.decision_function(x))
+        print('clf.predict(x) = ', clf.predict(x))
         z = z.reshape(x1.shape)
         plt.contour(x1, x2, z, colors=list('kbrbk'), linestyles=['--', '--', '-', '--', '--'],
                     linewidths=[1, 0.5, 1.5, 0.5, 1], levels=[-1, -0.5, 0, 0.5, 1])
@@ -68,5 +68,5 @@ if __name__ == "__main__":
     plt.suptitle(u'SVM不同参数的分类', fontsize=20)
     plt.tight_layout(1.4)
     plt.subplots_adjust(top=0.92)
-    plt.savefig('1.png')
+    plt.savefig('02.png')
     plt.show()

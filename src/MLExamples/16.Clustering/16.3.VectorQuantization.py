@@ -73,7 +73,7 @@ if __name__ == '__main__':
     plt.axis('off')
     plt.title(u'原始图片', fontsize=18)
     plt.imshow(image)
-    # plt.savefig('1.png')
+    # plt.savefig('02.png')
 
     plt.subplot(122)
     vq_image = restore_image(model.cluster_centers_, c, image.shape)

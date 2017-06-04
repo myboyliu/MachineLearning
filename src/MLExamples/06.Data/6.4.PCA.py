@@ -42,7 +42,7 @@ if __name__ == '__main__':
     plt.xlabel(u'组份1', fontsize=14)
     plt.ylabel(u'组份2', fontsize=14)
     plt.title(u'鸢尾花数据PCA降维', fontsize=18)
-    # plt.savefig('1.png')
+    # plt.savefig('02.png')
     plt.show()
 
     x, x_test, y, y_test = train_test_split(x, y, train_size=0.7)
