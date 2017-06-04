@@ -48,14 +48,14 @@ if __name__ == "__main__":
 
         y_unique = np.unique(y_hat)
         n_clusters = y_unique.size - (1 if -1 in y_hat else 0)
-        print y_unique, '聚类簇的个数为：', n_clusters
+        print(y_unique, '聚类簇的个数为：', n_clusters)
 
         # clrs = []
         # for c in np.linspace(16711680, 255, y_unique.size):
         #     clrs.append('#%06x' % c)
         plt.subplot(2, 3, i+1)
         clrs = plt.cm.Spectral(np.linspace(0, 0.8, y_unique.size))
-        print clrs
+        print(clrs)
         for k, clr in zip(y_unique, clrs):
             cur = (y_hat == k)
             if k == -1:
@@ -70,7 +70,7 @@ if __name__ == "__main__":
         plt.xlim((x1_min, x1_max))
         plt.ylim((x2_min, x2_max))
         plt.grid(True)
-        plt.title(ur'$\epsilon$ = %.1f  m = %d，聚类数目：%d' % (eps, min_samples, n_clusters), fontsize=16)
+        plt.title(u'$\epsilon$ = %.1f  m = %d，聚类数目：%d' % (eps, min_samples, n_clusters), fontsize=16)
     plt.tight_layout()
     plt.subplots_adjust(top=0.9)
     plt.show()

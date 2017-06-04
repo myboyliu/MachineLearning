@@ -22,7 +22,7 @@ def restore_image(cb, cluster, shape):
 
 def show_scatter(a):
     N = 10
-    print '原始数据：\n', a
+    print('原始数据：\n', a)
     density, edges = np.histogramdd(a, bins=[N,N,N], range=[(0,1), (0,1), (0,1)])
     density /= density.max()
     x = y = z = np.arange(N)
@@ -65,8 +65,8 @@ if __name__ == '__main__':
     image_sample = image_v[idx]
     model.fit(image_sample)
     c = model.predict(image_v)  # 聚类结果
-    print '聚类结果：\n', c
-    print '聚类中心：\n', model.cluster_centers_
+    print('聚类结果：\n', c)
+    print('聚类中心：\n', model.cluster_centers_)
 
     plt.figure(figsize=(15, 8), facecolor='w')
     plt.subplot(121)

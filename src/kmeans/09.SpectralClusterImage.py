@@ -30,16 +30,16 @@ if __name__ == "__main__":
     # a = affinity.toarray()
     # b = np.diag(a.diagonal())
     # a -= b
-    print '开始谱聚类...'
+    print('开始谱聚类...')
     y = spectral_clustering(affinity, n_clusters=n_clusters, assign_labels='kmeans', random_state=1)
-    print '谱聚类完成...'
+    print('谱聚类完成...')
     y = y.reshape(data.shape)
     for n in range(n_clusters):
         data[y == n] = n
     plt.subplot(122)
     clrs = []
     for c in np.linspace(16776960, 16711935, n_clusters):
-        clrs.append('#%06x' % c)
+        clrs.append('#%06d' % c)
     cm = matplotlib.colors.ListedColormap(clrs)
     plt.imshow(data, cmap=cm, interpolation='nearest')
     plt.title(u'谱聚类：%d簇' % n_clusters, fontsize=18)

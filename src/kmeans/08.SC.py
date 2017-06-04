@@ -32,7 +32,7 @@ if __name__ == "__main__":
     plt.suptitle(u'谱聚类', fontsize=20)
     clrs = plt.cm.Spectral(np.linspace(0, 0.8, n_clusters))
     for i, s in enumerate(np.logspace(-2, 0, 6)):
-        print s
+        print(s)
         af = np.exp(-m ** 2 / (s ** 2)) + 1e-6
         y_hat = spectral_clustering(af, n_clusters=n_clusters, assign_labels='kmeans', random_state=1)
         plt.subplot(2, 3, i+1)
@@ -46,7 +46,7 @@ if __name__ == "__main__":
         plt.xlim((x1_min, x1_max))
         plt.ylim((x2_min, x2_max))
         plt.grid(True)
-        plt.title(ur'$\sigma$ = %.2f' % s, fontsize=16)
+        plt.title(u'$\sigma$ = %.2f' % s, fontsize=16)
     plt.tight_layout()
     plt.subplots_adjust(top=0.9)
     plt.show()
