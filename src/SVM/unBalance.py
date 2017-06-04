@@ -50,11 +50,11 @@ if __name__ == "__main__":
         y_hat = clf.predict(x)
         # show_accuracy(y_hat, y) # 正确率
         # show_recall(y, y_hat)   # 召回率
-        print i+1, '次：'
-        print 'accuracy：\t', accuracy_score(y, y_hat)
-        print 'precision：\t', precision_score(y, y_hat, pos_label=1)
-        print 'recall：\t', recall_score(y, y_hat, pos_label=1)
-        print 'F1-score：\t', f1_score(y, y_hat, pos_label=1)
+        print(i+1, '次：')
+        print('accuracy：\t', accuracy_score(y, y_hat))
+        print('precision：\t', precision_score(y, y_hat, pos_label=1))
+        print('recall：\t', recall_score(y, y_hat, pos_label=1))
+        print('F1-score：\t', f1_score(y, y_hat, pos_label=1))
         print
 
 

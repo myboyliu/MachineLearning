@@ -25,7 +25,7 @@ if __name__ == "__main__":
     clf = svm.SVC(C=0.1, kernel='rbf', gamma=5)
     clf.fit(x, y)
     y_hat = clf.predict(x)
-    print '准确率：%.1f%%' % (np.mean(y_hat == y) * 100)
+    print('准确率：%.1f%%' % (np.mean(y_hat == y) * 100))
 
     mpl.rcParams['font.sans-serif'] = [u'SimHei']
     mpl.rcParams['axes.unicode_minus'] = False

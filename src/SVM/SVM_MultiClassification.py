@@ -32,10 +32,10 @@ if __name__ == "__main__":
     y_hat = clf.predict(x)
     acc = accuracy_score(y, y_hat)
     np.set_printoptions(suppress=True)
-    print u'预测正确的样本个数：%d，正确率：%.2f%%' % (round(acc*4*N), 100*acc)
+    print(u'预测正确的样本个数：%d，正确率：%.2f%%' % (round(acc*4*N), 100*acc))
     # decision_function
-    print clf.decision_function(x)
-    print y_hat
+    print(clf.decision_function(x))
+    print(y_hat)
 
     x1_min, x2_min = np.min(x, axis=0)
     x1_max, x2_max = np.max(x, axis=0)
