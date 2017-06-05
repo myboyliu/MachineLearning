@@ -5,11 +5,11 @@ import os
 
 class InitVectorFile():
     def __init__(self,rootDir):
-        self._imageDir=os.path.join(rootDir, 'images/kmeans/')
+        self._imageDir=os.path.join(rootDir, 'images/Clustering/')
         self._image2VectorDir=os.path.join(rootDir,'data')
         if not os.path.isdir(self._image2VectorDir):
             os.mkdir(self._image2VectorDir)
-        self._imageVectorsFile=os.path.join(self._image2VectorDir,'kmeans.txt')
+        self._imageVectorsFile=os.path.join(self._image2VectorDir,'Clustering.txt')
 
     def _loadImages(self):
         images = os.listdir(self._imageDir)
