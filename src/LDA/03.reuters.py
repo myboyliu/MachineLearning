@@ -28,7 +28,7 @@ if __name__ == "__main__":
     print("len(titles): {}\n".format(len(titles)))
     pprint(titles[:10])
 
-    print 'LDA start ----'
+    print('LDA start ----')
     topic_num = 20
     model = lda.LDA(n_topics=topic_num, n_iter=800, random_state=1)
     model.fit(X)

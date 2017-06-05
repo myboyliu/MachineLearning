@@ -120,7 +120,7 @@ def bw(pi, A, B, alpha, beta, gamma, ksi, o):
 
 
 def baum_welch(pi, A, B):
-    f = file(".\\1.txt")
+    f = open(".\\1.txt")
     sentence = f.read()[3:].decode('utf-8')
     f.close()
     T = len(sentence)
@@ -148,7 +148,7 @@ def mle():  # 0B/1M/2E/3S
     pi = [0] * 4   # npi[i]：i状态的个数
     a = [[0] * 4 for x in range(4)]     # na[i][j]：从i状态到j状态的转移个数
     b = [[0]* 65536 for x in range(4)]  # nb[i][o]：从i状态到o字符的个数
-    f = file(".\\pku_training.utf8")
+    f = open(".\\pku_training.utf8")
     data = f.read()[3:].decode('utf-8')
     f.close()
     tokens = data.split('  ')

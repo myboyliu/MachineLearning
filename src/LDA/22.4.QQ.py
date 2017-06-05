@@ -118,15 +118,15 @@ def export_perplexity1(corpus_tfidf, dictionary, corpus):
                                 alpha=0.001, eta=0.02, minimum_probability=0,
                                 update_every=1, chunksize=1000, passes=20)
         lp = model.log_perplexity(corpus)
-        print 't = ', t,
-        print 'lda.log_perplexity(corpus) = ', lp,
+        print('t = ', t,)
+        print('lda.log_perplexity(corpus) = ', lp,)
         lp1.append(lp)
 
         lp = model.log_perplexity(corpus_tfidf)
-        print '\t lda.log_perplexity(corpus_tfidf) = ', lp
+        print('\t lda.log_perplexity(corpus_tfidf) = ', lp)
         lp2.append(lp)
-    print lp1
-    print lp2
+    print(lp1)
+    print(lp2)
     column_names = 'Topic', 'Perplexity_Corpus', 'Perplexity_TFIDF'
     perplexity_topic = pd.DataFrame(data=zip(topic_nums, lp1, lp2), columns=column_names)
     perplexity_topic.to_csv('perplexity.csv', header=True, index=False)
@@ -142,15 +142,15 @@ def export_perplexity2(corpus_tfidf, dictionary, corpus):
                                 alpha=0.001, eta=0.02, minimum_probability=0,
                                 update_every=1, chunksize=100, passes=p)
         lp = model.log_perplexity(corpus)
-        print 't = ', t,
-        print 'lda.log_perplexity(corpus) = ', lp,
+        print('t = ', t,)
+        print('lda.log_perplexity(corpus) = ', lp,)
         lp1.append(lp)
 
         lp = model.log_perplexity(corpus_tfidf)
-        print '\t lda.log_perplexity(corpus_tfidf) = ', lp
+        print('\t lda.log_perplexity(corpus_tfidf) = ', lp)
         lp2.append(lp)
-    print lp1
-    print lp2
+    print(lp1)
+    print(lp2)
     column_names = 'Passes', 'Perplexity_Corpus', 'Perplexity_TFIDF'
     perplexity_topic = pd.DataFrame(data=zip(passes, lp1, lp2), columns=column_names)
     perplexity_topic.to_csv('perplexity2.csv', header=True, index=False)
@@ -163,25 +163,25 @@ def lda(export_perplexity=False):
     for info in data['Info']:
         texts.append(info.decode('utf-8').split(' '))
     M = len(texts)
-    print '文档数目：%d个' % M
+    print('文档数目：%d个' % M)
     # pprint(texts)
 
-    print '正在建立词典 --'
+    print('正在建立词典 --')
     dictionary = corpora.Dictionary(texts)
     V = len(dictionary)
-    print '正在计算文本向量 --'
+    print('正在计算文本向量 --')
     corpus = [dictionary.doc2bow(text) for text in texts]
-    print '正在计算文档TF-IDF --'
+    print('正在计算文档TF-IDF --')
     t_start = time.time()
     corpus_tfidf = models.TfidfModel(corpus)[corpus]
-    print '建立文档TF-IDF完成，用时%.3f秒' % (time.time() - t_start)
-    print 'LDA模型拟合推断 --'
+    print('建立文档TF-IDF完成，用时%.3f秒' % (time.time() - t_start))
+    print('LDA模型拟合推断 --')
     num_topics = 20
     t_start = time.time()
     lda = models.LdaModel(corpus_tfidf, num_topics=num_topics, id2word=dictionary,
                           alpha=0.001, eta=0.02, minimum_probability=0,
                           update_every=1, chunksize=1000, passes=20)
-    print u'LDA模型完成，训练时间为\t%.3f秒' % (time.time() - t_start)
+    print(u'LDA模型完成，训练时间为\t%.3f秒' % (time.time() - t_start))
     if export_perplexity:
         export_perplexity1(corpus_tfidf, dictionary, corpus)
         # export_perplexity2(corpus_tfidf, dictionary, corpus)
@@ -191,21 +191,21 @@ def lda(export_perplexity=False):
     # pprint(doc_topic)
 
     num_show_term = 7  # 每个主题显示几个词
-    print u'每个主题的词分布：'
+    print(u'每个主题的词分布：')
     for topic_id in range(num_topics):
-        print u'主题#%d：\t' % topic_id,
+        print(u'主题#%d：\t' % topic_id,)
         term_distribute_all = lda.get_topic_terms(topicid=topic_id)
         term_distribute = term_distribute_all[:num_show_term]
         term_distribute = np.array(term_distribute)
         term_id = term_distribute[:, 0].astype(np.int)
         for t in term_id:
-            print dictionary.id2token[t],
-        print u'\n概率：\t', term_distribute[:, 1]
+            print(dictionary.id2token[t],)
+        print(u'\n概率：\t', term_distribute[:, 1])
 
     # 随机打印某10个文档的主题
     np.set_printoptions(linewidth=200, suppress=True)
     num_show_topic = 10  # 每个文档显示前几个主题
-    print u'10个用户的主题分布：'
+    print(u'10个用户的主题分布：')
     doc_topics = lda.get_document_topics(corpus_tfidf)  # 所有文档的主题分布
     idx = np.arange(M)
     np.random.shuffle(idx)
@@ -215,8 +215,8 @@ def lda(export_perplexity=False):
         topic_distribute = np.array(topic[:, 1])
         # print topic_distribute
         topic_idx = topic_distribute.argsort()[:-num_show_topic - 1:-1]
-        print (u'第%d个用户的前%d个主题：' % (i, num_show_topic)), topic_idx
-        print topic_distribute[topic_idx]
+        print((u'第%d个用户的前%d个主题：' % (i, num_show_topic)), topic_idx)
+        print(topic_distribute[topic_idx])
     # 显示着10个文档的主题
     mpl.rcParams['font.sans-serif'] = [u'SimHei']
     mpl.rcParams['axes.unicode_minus'] = False
@@ -238,7 +238,7 @@ def lda(export_perplexity=False):
     plt.show()
 
     # 计算各个主题的强度
-    print u'\n各个主题的强度:\n'
+    print(u'\n各个主题的强度:\n')
     topic_all = np.zeros(num_topics)
     doc_topics = lda.get_document_topics(corpus_tfidf)  # 所有文档的主题分布
     for i in np.arange(M):  # 遍历所有文档
@@ -248,7 +248,7 @@ def lda(export_perplexity=False):
     topic_all /= M  # 平均
     idx = topic_all.argsort()
     topic_sort = topic_all[idx]
-    print topic_sort
+    print(topic_sort)
     plt.figure(facecolor='w')
     plt.stem(topic_sort, linefmt='g-', markerfmt='ro')
     plt.xticks(np.arange(idx.size), idx)
@@ -261,7 +261,7 @@ def lda(export_perplexity=False):
 
 def show_perplexity():
     data = pd.read_csv('Perplexity2.csv', header=0)
-    print data
+    print(data)
     columns = list(data.columns)
     mpl.rcParams['font.sans-serif'] = [u'SimHei']
     mpl.rcParams['axes.unicode_minus'] = False
@@ -277,12 +277,12 @@ def show_perplexity():
 
 
 if __name__ == '__main__':
-    print 'regularize_data'
+    print('regularize_data')
     regularize_data(u'机器学习升级版IV.txt')
-    print 'segment'
+    print('segment')
     segment()
-    print 'combine'
+    print('combine')
     combine()
-    print 'lda'
+    print('lda')
     lda(export_perplexity=True)
     # show_perplexity()

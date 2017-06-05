@@ -9,15 +9,15 @@ import matplotlib as mpl
 
 
 if __name__ == '__main__':
-    f = file('novel.txt', mode='r')
+    f = open('novel.txt', mode='r')
     text = f.read()
     f.close()
 
     tr4w = TextRank4Keyword()
     tr4w.analyze(text=text, lower=True, window=5)
-    print u'关键词：'
+    print(u'关键词：')
     for item in tr4w.get_keywords(10, word_min_len=1):
-        print item['word'], item['weight']
+        print(item['word'], item['weight'])
 
     tr4s = TextRank4Sentence()
     tr4s.analyze(text=text, lower=True, source = 'no_stop_words')
@@ -34,4 +34,4 @@ if __name__ == '__main__':
 
     key_sentences = tr4s.get_key_sentences(num=20, sentence_min_len=4)
     for sentence in key_sentences:
-        print sentence['weight'], sentence['sentence']
+        print(sentence['weight'], sentence['sentence'])
