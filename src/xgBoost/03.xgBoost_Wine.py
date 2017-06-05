@@ -18,7 +18,7 @@ if __name__ == "__main__":
     lr = LogisticRegression(penalty='l2')
     lr.fit(x_train, y_train.ravel())
     y_hat = lr.predict(x_test)
-    print 'Logistic回归正确率：', accuracy_score(y_test, y_hat)
+    print('Logistic回归正确率：', accuracy_score(y_test, y_hat))
 
     # XGBoost
     y_train[y_train == 3] = 0
@@ -29,4 +29,4 @@ if __name__ == "__main__":
     params = {'max_depth': 3, 'eta': 1, 'silent': 0, 'objective': 'multi:softmax', 'num_class': 3}
     bst = xgb.train(params, data_train, num_boost_round=2, evals=watch_list)
     y_hat = bst.predict(data_test)
-    print 'XGBoost正确率：', accuracy_score(y_test, y_hat)
+    print('XGBoost正确率：', accuracy_score(y_test, y_hat))

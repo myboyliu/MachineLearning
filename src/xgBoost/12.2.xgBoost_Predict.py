@@ -13,8 +13,8 @@ def iris_type(s):
 
 
 if __name__ == "__main__":
-    path = u'..\\08.Regression\\iris.data'  # 数据文件路径
-    data = np.loadtxt(path, dtype=float, delimiter=',', converters={4: iris_type})
+    path = u'iris.data'  # 数据文件路径
+    #data = np.loadtxt(path, dtype=float, delimiter=',', converters={4: iris_type})
     data = pd.read_csv(path, header=None)
     x, y = data[range(4)], data[4]
     y = pd.Categorical(y).codes
@@ -28,5 +28,5 @@ if __name__ == "__main__":
     bst = xgb.train(param, data_train, num_boost_round=6, evals=watch_list)
     y_hat = bst.predict(data_test)
     result = y_test.reshape(1, -1) == y_hat
-    print '正确率:\t', float(np.sum(result)) / len(y_hat)
-    print 'END.....\n'
+    print('正确率:\t', float(np.sum(result)) / len(y_hat))
+    print('END.....\n')

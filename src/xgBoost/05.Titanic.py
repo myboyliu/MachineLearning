@@ -15,7 +15,7 @@ import csv
 def show_accuracy(a, b, tip):
     acc = a.ravel() == b.ravel()
     acc_rate = 100 * float(acc.sum()) / a.size
-    print '%s正确率：%.3f%%' % (tip, acc_rate)
+    print('%s正确率：%.3f%%' % (tip, acc_rate))
     return acc_rate
 
 
@@ -39,7 +39,7 @@ def load_data(file_name, is_train):
     # data.loc[(data.Age.isnull()), 'Age'] = mean_age
     if is_train:
         # 年龄：使用随机森林预测年龄缺失值
-        print '随机森林预测缺失年龄：--start--'
+        print('随机森林预测缺失年龄：--start--')
         data_for_age = data[['Age', 'Survived', 'Fare', 'Parch', 'SibSp', 'Pclass']]
         age_exist = data_for_age.loc[(data.Age.notnull())]   # 年龄不缺失的数据
         age_null = data_for_age.loc[(data.Age.isnull())]
@@ -51,9 +51,9 @@ def load_data(file_name, is_train):
         age_hat = rfr.predict(age_null.values[:, 1:])
         # print age_hat
         data.loc[(data.Age.isnull()), 'Age'] = age_hat
-        print '随机森林预测缺失年龄：--over--'
+        print('随机森林预测缺失年龄：--over--')
     else:
-        print '随机森林预测缺失年龄2：--start--'
+        print('随机森林预测缺失年龄2：--start--')
         data_for_age = data[['Age', 'Fare', 'Parch', 'SibSp', 'Pclass']]
         age_exist = data_for_age.loc[(data.Age.notnull())]  # 年龄不缺失的数据
         age_null = data_for_age.loc[(data.Age.isnull())]
@@ -65,18 +65,18 @@ def load_data(file_name, is_train):
         age_hat = rfr.predict(age_null.values[:, 1:])
         # print age_hat
         data.loc[(data.Age.isnull()), 'Age'] = age_hat
-        print '随机森林预测缺失年龄2：--over--'
+        print('随机森林预测缺失年龄2：--over--')
 
     # 起始城市
     data.loc[(data.Embarked.isnull()), 'Embarked'] = 'S'  # 保留缺失出发城市
     # data['Embarked'] = data['Embarked'].map({'S': 0, 'C': 1, 'Q': 2, 'U': 0}).astype(int)
     # print data['Embarked']
     embarked_data = pd.get_dummies(data.Embarked)
-    print embarked_data
+    print(embarked_data)
     # embarked_data = embarked_data.rename(columns={'S': 'Southampton', 'C': 'Cherbourg', 'Q': 'Queenstown', 'U': 'UnknownCity'})
     embarked_data = embarked_data.rename(columns=lambda x: 'Embarked_' + str(x))
     data = pd.concat([data, embarked_data], axis=1)
-    print data.describe()
+    print(data.describe())
     data.to_csv('New_Data.csv')
 
     x = data[['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked_C', 'Embarked_Q', 'Embarked_S']]
@@ -142,6 +142,6 @@ if __name__ == "__main__":
     y_hat[~(y_hat > 0.5)] = 0
     xgb_acc = accuracy_score(y_test, y_hat)
 
-    print 'Logistic回归：%.3f%%' % lr_acc
-    print '随机森林：%.3f%%' % rfc_acc
-    print 'XGBoost：%.3f%%' % xgb_acc
+    print('Logistic回归：%.3f%%' % lr_acc)
+    print('随机森林：%.3f%%' % rfc_acc)
+    print('XGBoost：%.3f%%' % xgb_acc)
