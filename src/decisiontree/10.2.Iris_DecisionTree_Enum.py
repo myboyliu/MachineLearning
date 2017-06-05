@@ -37,10 +37,8 @@ if __name__ == "__main__":
 
         # 画图
         N, M = 500, 500  # 横纵各采样多少个值
-        x1_min = x.min()
-        x2_min = x.min()
-        x1_max = x.max()
-        x2_max = x.max()
+        x1_min, x2_min = x.min()
+        x1_max, x2_max = x.max()
 
         t1 = np.linspace(x1_min, x1_max, N)
         t2 = np.linspace(x2_min, x2_max, M)
