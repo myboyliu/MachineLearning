@@ -65,7 +65,7 @@ if __name__ == '__main__':
         theta[~(y_d > -0.5)] = 7
         directions[:, x.astype(np.int), theta] = 10
     directions[:, :] /= np.sum(directions[:, :])
-    print directions
+    print(directions)
 
     loc = np.zeros((m, n), dtype=np.float)
     loc[m/2, n/2] = 1

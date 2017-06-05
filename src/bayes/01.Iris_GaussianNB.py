@@ -19,7 +19,7 @@ def iris_type(s):
 
 
 if __name__ == "__main__":
-    data = pd.read_csv('..\\08.Regression\\iris.data', header=None)
+    data = pd.read_csv('iris.data', header=None)
     x, y = data[np.arange(4)], data[4]
     y = pd.Categorical(values=y).codes
     feature_names = u'花萼长度', u'花萼宽度', u'花瓣长度', u'花瓣宽度'
@@ -36,9 +36,9 @@ if __name__ == "__main__":
     # gnb = KNeighborsClassifier(n_neighbors=3).fit(x, y.ravel())
     gnb.fit(x, y.ravel())
     y_hat = gnb.predict(x)
-    print '训练集准确度: %.2f%%' % (100 * accuracy_score(y, y_hat))
+    print('训练集准确度: %.2f%%' % (100 * accuracy_score(y, y_hat)))
     y_test_hat = gnb.predict(x_test)
-    print '测试集准确度：%.2f%%' % (100 * accuracy_score(y_test, y_test_hat))  # 画图
+    print('测试集准确度：%.2f%%' % (100 * accuracy_score(y_test, y_test_hat)))  # 画图
 
     N, M = 500, 500     # 横纵各采样多少个值
     x1_min, x2_min = x.min()
