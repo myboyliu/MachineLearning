@@ -24,7 +24,7 @@ def accuracy_rate(y1, y2):
 if __name__ == '__main__':
     np.random.seed(0)
     cov1 = np.diag((1, 2))
-    print cov1
+    print(cov1)
     N1 = 500
     N2 = 300
     N = N1 + N2
@@ -43,8 +43,8 @@ if __name__ == '__main__':
         gmm.fit(x)
         err[i] = 1 - accuracy_rate(gmm.predict(x), y)
         bic[i] = gmm.bic(x)
-    print '错误率：', err.ravel()
-    print 'BIC：', bic.ravel()
+    print('错误率：', err.ravel())
+    print('BIC：', bic.ravel())
     xpos = np.arange(4)
     plt.figure(facecolor='w')
     ax = plt.axes()
@@ -61,8 +61,8 @@ if __name__ == '__main__':
     optimal = bic.argmin()
     gmm = GaussianMixture(n_components=2, covariance_type=types[optimal], random_state=0)
     gmm.fit(x)
-    print '均值 = \n', gmm.means_
-    print '方差 = \n', gmm.covariances_
+    print('均值 = \n', gmm.means_)
+    print('方差 = \n', gmm.covariances_)
     y_hat = gmm.predict(x)
 
     cm_light = mpl.colors.ListedColormap(['#FF8080', '#77E0A0'])

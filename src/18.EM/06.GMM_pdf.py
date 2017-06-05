@@ -34,8 +34,8 @@ if __name__ == '__main__':
     gmm.fit(x)
     centers = gmm.means_
     covs = gmm.covariances_
-    print 'GMM均值 = \n', centers
-    print 'GMM方差 = \n', covs
+    print('GMM均值 = \n', centers)
+    print('GMM方差 = \n', covs)
     y_hat = gmm.predict(x)
 
     colors = '#A0FFA0', '#E080A0',
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     x2_min, x2_max = expand(x2_min, x2_max)
     x1, x2 = np.mgrid[x1_min:x1_max:500j, x2_min:x2_max:500j]
     grid_test = np.stack((x1.flat, x2.flat), axis=1)
-    print gmm.score_samples(grid_test)
+    print(gmm.score_samples(grid_test))
     grid_hat = -gmm.score_samples(grid_test)
     grid_hat = grid_hat.reshape(x1.shape)
     plt.figure(figsize=(9, 7), facecolor='w')

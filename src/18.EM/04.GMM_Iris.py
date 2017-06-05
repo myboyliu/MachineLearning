@@ -21,7 +21,7 @@ def expand(a, b, rate=0.05):
 
 
 if __name__ == '__main__':
-    path = '..\\08.Regression\\iris.data'
+    path = 'iris.data'
     data = pd.read_csv(path, header=None)
     x_prime, y = data[np.arange(4)], data[4]
     y = pd.Categorical(y).codes
@@ -32,15 +32,15 @@ if __name__ == '__main__':
     for k, pair in enumerate(feature_pairs):
         x = x_prime[pair]
         m = np.array([np.mean(x[y == i], axis=0) for i in range(3)])  # 均值的实际值
-        print '实际均值 = \n', m
+        print('实际均值 = \n', m)
 
         gmm = GaussianMixture(n_components=n_components, covariance_type='full', random_state=0)
         gmm.fit(x)
-        print '预测均值 = \n', gmm.means_
-        print '预测方差 = \n', gmm.covariances_
+        print('预测均值 = \n', gmm.means_)
+        print('预测方差 = \n', gmm.covariances_)
         y_hat = gmm.predict(x)
         order = pairwise_distances_argmin(m, gmm.means_, axis=1, metric='euclidean')
-        print '顺序：\t', order
+        print('顺序：\t', order)
 
         n_sample = y.size
         n_types = 3
@@ -50,7 +50,7 @@ if __name__ == '__main__':
         for i in range(n_types):
             y_hat[change[i]] = i
         acc = u'准确率：%.2f%%' % (100*np.mean(y_hat == y))
-        print acc
+        print(acc)
 
         cm_light = mpl.colors.ListedColormap(['#FF8080', '#77E0A0', '#A0A0FF'])
         cm_dark = mpl.colors.ListedColormap(['r', 'g', '#6060FF'])

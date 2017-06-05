@@ -51,8 +51,8 @@ if __name__ == '__main__':
     gmm.fit(x)
     centers = gmm.means_
     covs = gmm.covariances_
-    print 'GMM均值 = \n', centers
-    print 'GMM方差 = \n', covs
+    print('GMM均值 = \n', centers)
+    print('GMM方差 = \n', covs)
     y_hat = gmm.predict(x)
 
     grid_hat = gmm.predict(grid_test)
@@ -82,10 +82,10 @@ if __name__ == '__main__':
     dpgmm.fit(x)
     centers = dpgmm.means_
     covs = dpgmm.covariances_
-    print 'DPGMM均值 = \n', centers
-    print 'DPGMM方差 = \n', covs
+    print('DPGMM均值 = \n', centers)
+    print('DPGMM方差 = \n', covs)
     y_hat = dpgmm.predict(x)
-    print y_hat
+    print(y_hat)
 
     ax = plt.subplot(212)
     grid_hat = dpgmm.predict(grid_test)
