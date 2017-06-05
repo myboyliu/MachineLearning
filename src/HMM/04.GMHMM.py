@@ -23,7 +23,7 @@ if __name__ == "__main__":
     n_samples = 500
     pi = np.random.rand(n)
     pi /= pi.sum()
-    print '初始概率：', pi
+    print('初始概率：', pi)
 
     A = np.random.rand(n, n)
     mask = np.zeros((n, n), dtype=np.bool)
@@ -35,20 +35,20 @@ if __name__ == "__main__":
     A[mask] = 0
     for i in range(n):
         A[i] /= A[i].sum()
-    print '转移概率：\n', A
+    print('转移概率：\n', A)
 
     means = np.array(((30, 30, 30), (0, 50, 20), (-25, 30, 10), (-15, 0, 25), (15, 0, 40)), dtype=np.float)
     # means = np.random.rand(5, 3)
-    print means
+    print(means)
     for i in range(n):
         means[i,:] /= np.sqrt(np.sum(means ** 2, axis=1))[i]
-    print '均值：\n', means
+    print('均值：\n', means)
 
     covars = np.empty((n, 3, 3))
     for i in range(n):
         # covars[i] = np.diag(np.random.randint(1, 5, size=2))
         covars[i] = np.diag(np.random.rand(3)*0.02+0.001)    # np.random.rand ∈[0,1)
-    print '方差：\n', covars
+    print('方差：\n', covars)
 
     model = hmm.GaussianHMM(n_components=n, covariance_type='full')
     model.startprob_ = pi
@@ -62,14 +62,14 @@ if __name__ == "__main__":
     model.fit(sample)
     y = model.predict(sample)
     np.set_printoptions(suppress=True)
-    print '##估计初始概率：', model.startprob_
-    print '##估计转移概率：\n', model.transmat_
-    print '##估计均值：\n', model.means_
-    print '##估计方差：\n', model.covars_
+    print('##估计初始概率：', model.startprob_)
+    print('##估计转移概率：\n', model.transmat_)
+    print('##估计均值：\n', model.means_)
+    print('##估计方差：\n', model.covars_)
 
     # 类别
     order = pairwise_distances_argmin(means, model.means_, metric='euclidean')
-    print order
+    print(order)
     pi_hat = model.startprob_[order]
     A_hat = model.transmat_[order]
     A_hat = A_hat[:, order]
@@ -80,14 +80,14 @@ if __name__ == "__main__":
         change[i] = y == order[i]
     for i in range(n):
         y[change[i]] = i
-    print '估计初始概率：', pi_hat
-    print '估计转移概率：\n', A_hat
-    print '估计均值：\n', means_hat
-    print '估计方差：\n', covars_hat
-    print labels
-    print y
+    print('估计初始概率：', pi_hat)
+    print('估计转移概率：\n', A_hat)
+    print('估计均值：\n', means_hat)
+    print('估计方差：\n', covars_hat)
+    print(labels)
+    print(y)
     acc = np.mean(labels == y) * 100
-    print '准确率：%.2f%%' % acc
+    print('准确率：%.2f%%' % acc)
 
     mpl.rcParams['font.sans-serif'] = [u'SimHei']
     mpl.rcParams['axes.unicode_minus'] = False

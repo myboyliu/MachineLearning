@@ -59,7 +59,7 @@ if __name__ == "__main__":
     components_state = model.predict(y)
     components_pd = pd.DataFrame(components, columns=np.arange(n_components), index=data.index)
     data = pd.concat((data, components_pd), axis=1)
-    print 'data = \n', data
+    print('data = \n', data)
 
     plt.figure(num=1, facecolor='w', figsize=(8, 9))
     plt.subplot(n_components+1, 1, 1)
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     for component in np.arange(n_components):
         idx = components_state == component
         y_new[idx] = np.median(y[idx])
-    print u'整流后均值：', np.mean(y_new)
+    print(u'整流后均值：', np.mean(y_new))
     data['New'] = y_new
     data.to_excel('new_current.xls', index=False)
 

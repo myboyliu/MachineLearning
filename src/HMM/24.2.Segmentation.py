@@ -116,7 +116,7 @@ def bw(pi, A, B, alpha, beta, gamma, ksi, o):
 
 
 def baum_welch(pi, A, B):
-    f = file(".\\2.txt")
+    f = open(".\\2.txt")
     sentence = f.read()[3:].decode('utf-8') # 跳过文件头
     f.close()
     T = len(sentence)   # 观测序列
@@ -171,12 +171,12 @@ def train():
 
 
 def load_train():
-    f = file(".\\pi.txt", mode="r")
+    f = open(".\\pi.txt", mode="r")
     for line in f:
         pi = map(float, line.split(' ')[:-1])
     f.close()
 
-    f = file(".\\A.txt", mode="r")
+    f = open(".\\A.txt", mode="r")
     A = [[] for x in range(4)] # 转移矩阵：B/M/E/S
     i = 0
     for line in f:
@@ -184,7 +184,7 @@ def load_train():
         i += 1
     f.close()
 
-    f = file(".\\B.txt", mode="r")
+    f = open(".\\B.txt", mode="r")
     B = [[] for x in range(4)]
     i = 0
     for line in f:
@@ -231,19 +231,19 @@ def segment(sentence, decode):
                 if decode[j] == 2:
                     break
                 j += 1
-            print sentence[i:j+1], "|",
+            print(sentence[i:j+1], "|",)
             i = j+1
         elif decode[i] == 3 or decode[i] == 2:    # single
-            print sentence[i:i+1], "|",
+            print(sentence[i:i+1], "|",)
             i += 1
         else:
-            print 'Error:', i, decode[i]
+            print('Error:', i, decode[i])
             i += 1
 
 
 if __name__ == "__main__":
     pi, A, B = load_train()
-    f = file(".\\novel.txt")
+    f = open(".\\novel.txt")
     data = f.read()[3:].decode('utf-8')
     f.close()
     decode = viterbi(pi, A, B, data)

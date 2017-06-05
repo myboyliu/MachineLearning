@@ -15,4 +15,4 @@ if __name__ == "__main__":
 
     seg = jieba.posseg.cut(str)
     for word, flag in seg:
-        print word, flag, '|',
+        print(word, flag, '|',)

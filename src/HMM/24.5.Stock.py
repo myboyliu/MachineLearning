@@ -33,7 +33,7 @@ if __name__ == "__main__":
     model.fit(sample)
     y = model.predict_proba(sample)
     np.set_printoptions(suppress=True)
-    print y
+    print(y)
 
     t = np.arange(len(diff_price))
     mpl.rcParams['font.sans-serif'] = [u'SimHei']
