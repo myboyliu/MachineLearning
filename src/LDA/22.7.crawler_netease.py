@@ -6,7 +6,7 @@ import os
 import sys
 from bs4 import BeautifulSoup
 import httplib
-
+from imp import reload
 reload(sys)
 sys.setdefaultencoding('utf-8')
 

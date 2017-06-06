@@ -4,9 +4,10 @@ import requests
 from bs4 import BeautifulSoup
 import sys
 import csv
+from imp import reload
 
 reload(sys)
-sys.setdefaultencoding('utf-8')
+#sys.setdefaultencoding('utf-8')
 
 
 def not_empty(str):
@@ -16,7 +17,7 @@ def not_empty(str):
 if __name__ == '__main__':
     url_main = 'http://bj.lianjia.com'
 
-    f = open(u'北京二手房.csv', 'wb')
+    f = open(u'北京二手房.csv', 'wb',encoding="utf-8")
     f.write(unicode('\xEF\xBB\xBF', 'utf-8'))   # 文件头
     writer = csv.writer(f)
     writer.writerow(['区域', '小区名称', '户型', '面积', '价格(万)', '单价(元/平米)',
@@ -28,7 +29,7 @@ if __name__ == '__main__':
     districts = soup.find(name='div', attrs={'data-role':'ershoufang'}) # <div data-role="ershoufang">
     # soup.select()
     for district in districts.find_all(name='a'):
-        print district['title']
+        print(district['title'])
         district_name = district.text   # '东城', '西城', '朝阳', '海淀'......
         url = '%s%s' % (url_main, district['href'])
         # print url
