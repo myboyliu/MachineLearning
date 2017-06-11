@@ -16,8 +16,15 @@ if __name__ == "__main__":
     path = u'iris.data'  # 数据文件路径
     #data = np.loadtxt(path, dtype=float, delimiter=',', converters={4: iris_type})
     data = pd.read_csv(path, header=None)
-    x, y = data[range(4)], data[4]
-    y = pd.Categorical(y).codes
+    #x, y = data[range(4)], data[4]
+    x = data.values[:,:4]
+    y_prime = data.values[:, -1:]
+
+    YY = []
+    for index, vec in enumerate(y_prime):
+        YY.append(vec[0])
+
+    y = pd.Categorical(YY).codes
     x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=1, test_size=50)
 
     data_train = xgb.DMatrix(x_train, label=y_train)
