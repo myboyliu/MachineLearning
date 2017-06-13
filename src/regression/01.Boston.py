@@ -24,12 +24,12 @@ if __name__ == "__main__":
     warnings.filterwarnings(action='ignore')
     np.set_printoptions(suppress=True)
     file_data = pd.read_csv('housing.data', header=None)
-    data = np.empty((len(file_data), 14))
-    for i, d in enumerate(file_data.values):
-        d = map(float, filter(not_empty, d[0].split(' ')))
-        data[i] = d
-    x, y = np.split(data, (13, ), axis=1)
-
+    # data = np.empty((len(file_data), 14))
+    # for i, d in enumerate(file_data.values):
+    #     d = map(float, filter(not_empty, d[0].split(' ')))
+    #     data[i] = d
+    # x, y = np.split(data, (13, ), axis=1)
+    x, y = file_data[np.arange(13)], file_data[13]
     print(u'样本个数：%d, 特征个数：%d' % x.shape)
     print(y.shape)
     y = y.ravel()
@@ -42,6 +42,7 @@ if __name__ == "__main__":
                                 fit_intercept=False, max_iter=1e3, cv=3))
     ])
     print(u'开始建模...')
+
     model.fit(x_train, y_train)
     linear = model.get_params('linear')['linear']
     print(u'超参数：', linear.alpha_)
@@ -49,8 +50,9 @@ if __name__ == "__main__":
     # print u'系数：', linear.coef_.ravel()
 
     order = y_test.argsort(axis=0)
-    y_test = y_test[order]
-    x_test = x_test[order, :]
+    print(order)
+    # y_test = y_test[order]
+    # x_test = x_test[order, :]
     y_pred = model.predict(x_test)
     r2 = model.score(x_test, y_test)
     mse = mean_squared_error(y_test, y_pred)
