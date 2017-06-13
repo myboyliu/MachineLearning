@@ -7,10 +7,8 @@ import jieba.posseg
 
 
 if __name__ == "__main__":
-    reload(sys)
-    sys.setdefaultencoding('utf-8')
-    f = open('.\\novel.txt')
-    str = f.read().decode('utf-8')
+    f = open('novel.txt')
+    str = f.read()
     f.close()
 
     seg = jieba.posseg.cut(str)

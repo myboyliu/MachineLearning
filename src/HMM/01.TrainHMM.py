@@ -148,8 +148,8 @@ def mle():  # 0B/1M/2E/3S
     pi = [0] * 4   # npi[i]：i状态的个数
     a = [[0] * 4 for x in range(4)]     # na[i][j]：从i状态到j状态的转移个数
     b = [[0]* 65536 for x in range(4)]  # nb[i][o]：从i状态到o字符的个数
-    f = open(".\\pku_training.utf8")
-    data = f.read()[3:].decode('utf-8')
+    f = open("pku_training.utf8")
+    data = f.read()[3:]
     f.close()
     tokens = data.split('  ')
     # # 增加英文词训练集
@@ -212,14 +212,14 @@ def list_write(f, v):
 
 
 def save_parameter(pi, A, B):
-    f_pi = open(".\\pi.txt", "w")
+    f_pi = open("pi.txt", "w")
     list_write(f_pi, pi)
     f_pi.close()
-    f_A = open(".\\A.txt", "w")
+    f_A = open("A.txt", "w")
     for a in A:
         list_write(f_A, a)
     f_A.close()
-    f_B = open(".\\B.txt", "w")
+    f_B = open("B.txt", "w")
     for b in B:
         list_write(f_B, b)
     f_B.close()
