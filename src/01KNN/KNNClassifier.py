@@ -1,9 +1,6 @@
-import sys
-sys.path.append("..")
 import matplotlib.pyplot as plt
-
-from common.Distance import Distance
-from common.DataLoad import DataLoad
+import pandas as pd
+from Distance import Distance
 
 class KNNClassifier():
     def __init__(self,data, k=10):
@@ -33,8 +30,8 @@ class KNNClassifier():
         return nearestk[0][1]
 
 if __name__ == '__main__':
-    dataload = DataLoad('watermelon30a.txt')
-    data = dataload.getRawData()
+    dataload = pd.read_csv('watermelon30a.txt')
+    data = dataload.values[:, 1:].tolist()
     knn = KNNClassifier(data)
 
     dataForClassOne = []
