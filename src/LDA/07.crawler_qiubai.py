@@ -1,15 +1,12 @@
 # -*- coding:utf-8 -*-
 
-import urllib2
+import urllib.request
 import re
 import os
 import sys
 import requests
 from bs4 import BeautifulSoup
 
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 
 def write_file(file_name, writer_name, agree, comment, postings):
@@ -30,10 +27,10 @@ if __name__ == '__main__':
         headers = {'User-Agent':'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
         # print url
         try:
-            request = urllib2.Request(url, headers=headers)
-            response = urllib2.urlopen(request)
+            request = urllib.request.Request(url, headers=headers)
+            response = urllib.request.urlopen(request)
             content = response.read().decode('utf-8')
-            print content
+            print(content)
             # content = requests.get(url)
             # content = content.text.encode(content.encoding).decode('utf-8')
             pattern = re.compile('<div class="author clearfix">.*?<a href="/users/.*?/".*?'
@@ -45,20 +42,20 @@ if __name__ == '__main__':
             items = re.findall(pattern, content)
             for i, item in enumerate(items):
                 postings = item[2].replace('<br/>', '\n')
-                print '发帖人ID：', item[0]
-                print '帖子ID：', item[1]
-                print '内容：', postings
-                print '点赞：', item[3]
-                print '评论数：', item[4]
+                print('发帖人ID：', item[0])
+                print('帖子ID：', item[1])
+                print('内容：', postings)
+                print('点赞：', item[3])
+                print('评论数：', item[4])
                 write_file(item[1], item[0], item[3], item[4], postings)
                 f_all.write(item[0])
                 f_all.write('\n')
                 f_all.write(postings)
                 f_all.write('\n\n')
-        except urllib2.URLError, e:
+        except urllib.request.URLError as e:
             if hasattr(e,"code"):
-                print e.code
+                print(e.code)
             if hasattr(e,"reason"):
-                print e.reason
+                print(e.reason)
             break
     f_all.close()

@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import sys
 import csv
 from imp import reload
-
+import codecs
 reload(sys)
 #sys.setdefaultencoding('utf-8')
 
@@ -17,8 +17,8 @@ def not_empty(str):
 if __name__ == '__main__':
     url_main = 'http://bj.lianjia.com'
 
-    f = open(u'北京二手房.csv', 'wb',encoding="utf-8")
-    f.write(unicode('\xEF\xBB\xBF', 'utf-8'))   # 文件头
+    f = codecs.open(u'北京二手房.csv', 'wb',"utf-8")
+    # f.write(u'\xEF\xBB\xBF', 'utf-8')   # 文件头
     writer = csv.writer(f)
     writer.writerow(['区域', '小区名称', '户型', '面积', '价格(万)', '单价(元/平米)',
                      '性质', '朝向', '装修', '是否有电梯', '楼层', '建筑年代', '楼型'])
@@ -102,6 +102,7 @@ if __name__ == '__main__':
                     if len(info) > 5:
                         elevator = info[5].strip()      # 是否有电梯：有、无
                 if info2:
+                    print(info2.text.split(' '))
                     info2 = filter(not_empty, info2.text.split(' '))
                     floor = info2[0].strip()
                     info2 = info2[1]

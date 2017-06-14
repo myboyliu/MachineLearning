@@ -5,13 +5,14 @@ import numpy as np
 from gensim import corpora, models, similarities
 from pprint import pprint
 import time
+import codecs
 
 # import logging
 # logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
 def load_stopword():
-    f_stop = open('stopword.txt')
+    f_stop = codecs.open('stopword.txt', "r", "gbk")
     sw = [line.strip() for line in f_stop]
     f_stop.close()
     return sw

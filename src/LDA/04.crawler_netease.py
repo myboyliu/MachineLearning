@@ -1,21 +1,18 @@
 # -*- coding:utf-8 -*-
 
-import urllib2
+import urllib.request
 import re
 import os
 import sys
 from bs4 import BeautifulSoup
-import httplib
 from imp import reload
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 
 def write_file(url, path):
     headers = {'User-Agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
     try:
-        request = urllib2.Request(url, headers=headers)
-        response = urllib2.urlopen(request)
+        request = urllib.request.Request(url, headers=headers)
+        response = urllib.request.urlopen(request)
         content = response.read().decode('gbk')
         # print content
         pattern = re.compile('<div class="post_content_main" id="epContentLeft">.*?<h1>(.*?)</h1>', re.S)
@@ -43,23 +40,23 @@ def write_file(url, path):
         f.write(title+'\n\n')
         f.write(clear_text)
         f.close()
-    except urllib2.URLError, e:
+    except urllib.request.URLError as e:
         if hasattr(e, "code"):
-            print e.code
+            print(e.code)
         if hasattr(e, "reason"):
-            print e.reason
+            print(e.reason)
 
 
 def crawl_topic(url, topic):
-    print '正在爬取主题：', topic
-    print '链接：', url
+    print('正在爬取主题：', topic)
+    print('链接：', url)
     topic_path = main_dictionary+topic+'\\'
     if not os.path.exists(topic_path):
         os.mkdir(topic_path)
     headers = {'User-Agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
     try:
-        request = urllib2.Request(url, headers=headers)
-        response = urllib2.urlopen(request)
+        request = urllib.request.Request(url, headers=headers)
+        response = urllib.request.urlopen(request)
         content = response.read().decode('gbk')
         # print content
         pattern = re.compile('<td class=".*?"><span>.*?</span><a href="(.*?)">(.*?)</a></td>')
@@ -67,14 +64,14 @@ def crawl_topic(url, topic):
         pattern = re.compile('<td class=".*?"><a href="(.*?)">(.*?)</a></td>')
         items += re.findall(pattern=pattern, string=content)
         for i, (link, title) in enumerate(items):
-            print link, title
+            print(link, title)
             write_file(link, topic_path)
-    except urllib2.URLError, e:
+    except urllib.request.URLError as e:
         if hasattr(e, "code"):
-            print e.code
+            print(e.code)
         if hasattr(e, "reason"):
-            print e.reason
-    print '\n\n\n\n'
+            print(e.reason)
+    print('\n\n\n\n')
 
 
 if __name__ == '__main__':
@@ -84,9 +81,9 @@ if __name__ == '__main__':
     url = 'http://news.163.com/rank/'
     headers = {'User-Agent':'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
     try:
-        print '建立连接'
-        request = urllib2.Request(url, headers={})
-        response = urllib2.urlopen(request)
+        print('建立连接')
+        request = urllib.request.Request(url, headers={})
+        response = urllib.request.urlopen(request)
         content = response.read().decode('gbk')
         # print content
         pattern = re.compile(u'<div class="list"><ul id="calendarList"><li></li></ul></div>'
@@ -96,15 +93,15 @@ if __name__ == '__main__':
         for item in soup.find_all('a'):
             crawl_topic(item['href'], item.get_text())
             break
-    except urllib2.URLError, e:
+    except urllib.request.URLError as e:
         if hasattr(e,"code"):
-            print e.code
+            print(e.code)
         if hasattr(e,"reason"):
-            print e.reason
-    except httplib.IncompleteRead, e:
-        print '---httplib.IncompleteRead---'
-        print e
+            print(e.reason)
+    except httplib2.IncompleteRead as e:
+        print('---httplib.IncompleteRead---')
+        print(e)
         if hasattr(e, "code"):
-            print e.code
+            print(e.code)
         if hasattr(e, "reason"):
-            print e.reason
+            print(e.reason)
