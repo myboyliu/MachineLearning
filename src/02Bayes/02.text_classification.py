@@ -56,7 +56,7 @@ def test_clf(clf):
     if index != -1:
         name = name[:index]     # 去掉末尾的Classifier
     if name == 'SVC':
-        name = 'SVM'
+        name = '05SVM'
     return t_train, t_test, 1-acc, name
 
 

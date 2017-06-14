@@ -149,7 +149,7 @@ class SMO(object):
         return self.W, self.b
 
 if __name__ == '__main__':
-    dataLoad = DataLoad('SVM/data01.txt')#watermelon20a.txt
+    dataLoad = DataLoad('05SVM/data01.txt')#watermelon20a.txt
     data = dataLoad.getFullData()
     realData = data.values[:, :].tolist()
 

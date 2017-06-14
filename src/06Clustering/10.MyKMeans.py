@@ -102,13 +102,13 @@ class KMeans():
                 self._clusterCenters[i][j] = newClusterCenters[i][j] * 1.0 / clusterMemberCnt[i]
 
 if __name__ == '__main__':
-    dataLoad = DataLoad('Clustering.txt')
+    dataLoad = DataLoad('06Clustering.txt')
     K = 5
     data = dataLoad.getFullData()
     mCluster, centers = km.kCluster()
     print(mCluster)
     basedir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    dir = os.path.join(basedir, "images/Clustering/cluster/")
+    dir = os.path.join(basedir, "images/06Clustering/cluster/")
 
     clustersDir = os.path.join(dir, "Clusters/")
     shutil.rmtree(clustersDir)

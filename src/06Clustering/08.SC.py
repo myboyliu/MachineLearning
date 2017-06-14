@@ -34,7 +34,7 @@ if __name__ == "__main__":
     for i, s in enumerate(np.logspace(-2, 0, 6)):
         print(s)
         af = np.exp(-m ** 2 / (s ** 2)) + 1e-6
-        y_hat = spectral_clustering(af, n_clusters=n_clusters, assign_labels='Clustering', random_state=1)
+        y_hat = spectral_clustering(af, n_clusters=n_clusters, assign_labels='06Clustering', random_state=1)
         plt.subplot(2, 3, i+1)
         for k, clr in enumerate(clrs):
             cur = (y_hat == k)

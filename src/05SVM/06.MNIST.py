@@ -77,8 +77,8 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.show()
 
-    # SVM
-    if classifier_type == 'SVM':
+    # 05SVM
+    if classifier_type == '05SVM':
         # params = {'C':np.logspace(1, 4, 4, base=10), 'gamma':np.logspace(-10, -2, 9, base=10)}
         # clf = svm.SVC(kernel='rbf')
         # model = GridSearchCV(clf, param_grid=params, cv=3)

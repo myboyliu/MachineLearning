@@ -31,7 +31,7 @@ if __name__ == "__main__":
     # b = np.diag(a.diagonal())
     # a -= b
     print('开始谱聚类...')
-    y = spectral_clustering(affinity, n_clusters=n_clusters, assign_labels='Clustering', random_state=1)
+    y = spectral_clustering(affinity, n_clusters=n_clusters, assign_labels='06Clustering', random_state=1)
     print('谱聚类完成...')
     y = y.reshape(data.shape)
     for n in range(n_clusters):

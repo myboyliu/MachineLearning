@@ -38,8 +38,8 @@ if __name__ == '__main__':
     models = [
         ['KNN', KNeighborsClassifier(n_neighbors=7)],
         ['LogisticRegression', LogisticRegressionCV(Cs=alpha, penalty='l2', cv=3)],
-        ['SVM(Linear)', GridSearchCV(SVC(kernel='linear', decision_function_shape='ovr'), param_grid={'C': alpha})],
-        ['SVM(RBF)', GridSearchCV(SVC(kernel='rbf', decision_function_shape='ovr'), param_grid={'C': alpha, 'gamma': alpha})]]
+        ['05SVM(Linear)', GridSearchCV(SVC(kernel='linear', decision_function_shape='ovr'), param_grid={'C': alpha})],
+        ['05SVM(RBF)', GridSearchCV(SVC(kernel='rbf', decision_function_shape='ovr'), param_grid={'C': alpha, 'gamma': alpha})]]
     colors = cycle('gmcr')
     mpl.rcParams['font.sans-serif'] = u'SimHei'
     mpl.rcParams['axes.unicode_minus'] = False
