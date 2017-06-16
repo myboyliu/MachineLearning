@@ -25,9 +25,11 @@ if __name__ == "__main__":
     path = 'iris.data'  # 数据文件路径
     data = pd.read_csv(path, header=None)
     x = data[np.arange(4)]
+
     y = pd.Categorical(data[4]).codes
     # 为了可视化，仅使用前两列特征
     x = x.iloc[:, :2]
+    print(x)
     x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.7, random_state=1)
     print(y_test.shape)
 

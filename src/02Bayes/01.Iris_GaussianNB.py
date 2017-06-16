@@ -33,7 +33,7 @@ if __name__ == "__main__":
         ('sc', StandardScaler()),
         ('poly', PolynomialFeatures(degree=1)),
         ('clf', GaussianNB(priors=priors))])    # 由于鸢尾花数据是样本均衡的，其实不需要设置先验值
-    # gnb = KNeighborsClassifier(n_neighbors=3).fit(x, y.ravel())
+    #gnb = KNeighborsClassifier(n_neighbors=3).fit(x, y.ravel())
     gnb.fit(x, y.ravel())
     y_hat = gnb.predict(x)
     print('训练集准确度: %.2f%%' % (100 * accuracy_score(y, y_hat)))

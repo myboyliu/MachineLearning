@@ -98,7 +98,7 @@ if __name__ == '__main__':
 
     ax.plot(xa,ya,color='m',linestyle='',marker='.')
 
-    order = 9
+    order = 6
     data = []
     for i in range(len(xa)):
         data.append([xa[i], ya[i]])
