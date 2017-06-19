@@ -14,7 +14,6 @@ if __name__ == "__main__":
 
     # pandas读入
     data = pd.read_csv('Advertising.csv')
-    # x = data[['TV', 'Radio', 'Newspaper']]
     x = data[['TV', 'Radio']]
     y = data['Sales']
     print(x)
