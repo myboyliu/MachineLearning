@@ -1,6 +1,0 @@
-my,dog,has,flea,0
-him,not,take,1
-my,licks,love,him,0
-stupid,worthless,garbage,1
-mr,licks,stop,him,0
-worthless,dog,stupid,1
