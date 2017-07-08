@@ -1,6 +1,6 @@
 *#*#
 *.#*
-*.iml
+../.idea/MachineLearning.iml
 *.ipr
 *.iws
 .idea/
