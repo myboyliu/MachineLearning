@@ -1,61 +1,45 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
-from skimage import data,filters
+from matplotlib import pyplot as plt
+img = cv2.imread('images/12/opencv-logo.png')
 
-def imconv(image_array,suanzi):
-    image = image_array.copy()     # 原图像矩阵的深拷贝
-    dim1,dim2 = image.shape
-    # 对每个元素与算子进行乘积再求和(忽略最外圈边框像素)
-    for i in range(1,dim1-1):
-        for j in range(1,dim2-1):
-            image[i,j] = (image_array[(i-1):(i+2),(j-1):(j+2)]*suanzi).sum()
+plt.figure(figsize=(13,7))
+plt.subplot(231)
+plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+plt.title('Original')
+plt.xticks([]), plt.yticks([])
 
-    # 由于卷积后灰度值不一定在0-255之间，统一化成0-255
-    image = image*(255.0/image.max())
+kernel = np.ones((3,3),np.float32)/9
+dst = cv2.filter2D(img,-1,kernel)
+plt.subplot(232),
+plt.imshow(cv2.cvtColor(dst, cv2.COLOR_BGR2RGB))
+plt.title('3*3')
+plt.xticks([]), plt.yticks([])
 
-    # 返回结果矩阵
-    return image
+kernel = np.ones((5,5),np.float32)/25
+dst = cv2.filter2D(img,-1,kernel)
+plt.subplot(233)
+plt.imshow(cv2.cvtColor(dst, cv2.COLOR_BGR2RGB))
+plt.title('5*5')
+plt.xticks([]), plt.yticks([])
 
-suanzi_x = np.array([[-1, 0, 1],
-                     [ -1, 0, 1],
-                     [ -1, 0, 1]])
+kernel = np.ones((10,10),np.float32)/100
+dst = cv2.filter2D(img,-1,kernel)
+plt.subplot(234)
+plt.imshow(cv2.cvtColor(dst, cv2.COLOR_BGR2RGB))
+plt.title('9*9')
+plt.xticks([]), plt.yticks([])
 
-# y方向的Prewitt算子
-suanzi_y = np.array([[-1,-1,-1],
-                     [ 0, 0, 0],
-                     [ 1, 1, 1]])
+kernel = np.ones((20,20),np.float32)/300
+dst = cv2.filter2D(img,-1,kernel)
+plt.subplot(235)
+plt.imshow(cv2.cvtColor(dst, cv2.COLOR_BGR2RGB))
+plt.title('19*19')
+plt.xticks([]), plt.yticks([])
 
-
-# 打开图像并转化成灰度图像
-image = cv2.imread('images/12/Lena.png', cv2.IMREAD_GRAYSCALE)
-
-# 转化成图像矩阵
-image_array = np.array(image)
-
-# 得到x方向矩阵
-image_x = imconv(image_array,suanzi_x)
-
-# 得到y方向矩阵
-image_y = imconv(image_array,suanzi_y)
-
-# 得到梯度矩阵
-image_xy = np.sqrt(image_x**2+image_y**2)
-# 梯度矩阵统一到0-255
-image_xy = (255.0/image_xy.max())*image_xy
-edges = filters.prewitt(image)
-# 绘出图像
-plt.figure(figsize=(10,8), facecolor='w')
-plt.subplot(2,2,1)
-plt.imshow(image_array,cmap=plt.cm.gray)
-plt.axis("off")
-plt.subplot(2,2,2)
-plt.imshow(edges,cmap=plt.cm.gray)
-plt.axis("off")
-plt.subplot(2,2,3)
-plt.imshow(image_y,cmap=plt.cm.gray)
-plt.axis("off")
-plt.subplot(2,2,4)
-plt.imshow(image_xy,cmap=plt.cm.gray)
-plt.axis("off")
+blur = cv2.blur(img,(3,3)) # blur就是做的平滑均值滤波
+plt.subplot(236)
+plt.imshow(cv2.cvtColor(blur, cv2.COLOR_BGR2RGB))
+plt.title('3*3')
+plt.xticks([]), plt.yticks([])
 plt.show()
