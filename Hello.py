@@ -2,40 +2,60 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-def getMatrix(matrix, x, y, length):
-    matrix1 = matrix[:(x+length+1), :(y+length+1)]
-    return matrix1[(x-length):, (y-length):]
+def imConv(image_array,suanzi, kernelDim):
+    image = image_array.copy()
 
-image_BGR = cv2.imread('images/12/Cat.jpg')
+    dim1,dim2 = image.shape
+    newImageDelta = int((kernelDim - 1)/2)
+    for i in range(newImageDelta,dim1-newImageDelta):
+        for j in range(newImageDelta,dim2-newImageDelta):
+            image[i,j] = (image_array[(i-newImageDelta):(i+newImageDelta+1),(j-newImageDelta):(j+newImageDelta+1)]*suanzi).sum()
+
+    image = image*(255.0/image.max())
+
+    return image
+image_BGR = cv2.imread('images/12/Lena.png')
 image_RGB = cv2.cvtColor(image_BGR, cv2.COLOR_BGR2RGB)
 image_Gray = cv2.cvtColor(image_RGB, cv2.COLOR_RGB2GRAY)
 
 kernelDim = 3
-
-newImageDelta = int((kernelDim - 1)/2)
-image = np.ones((image_Gray.shape[0] + 2 * newImageDelta) * (image_Gray.shape[1]+ 2 * newImageDelta),np.uint8) * 255
-image = image.reshape(image_Gray.shape[0]+ 2 * newImageDelta, image_Gray.shape[1]+ 2 * newImageDelta)
-delta = newImageDelta
-for x in range(image_Gray.shape[0]):
-    for y in range(image_Gray.shape[1]):
-        image[x+delta,y+delta] = image_Gray[x,y]
-
 kernel = np.ones((kernelDim,kernelDim), np.float32) / (kernelDim * kernelDim)
-GaoSi = np.array(([1,2,1],[2,4,2],[1,2,1]), dtype=np.int)
-Ruihua = np.array(([0,-1,0],[-1,3,-1],[0,-1,0]), dtype=np.int)
-for x in range(image_Gray.shape[0]):
-    for y in range(image_Gray.shape[1]):
-        xNew = x + delta
-        yNew = y + delta
-        matrixNew = getMatrix(image, xNew, yNew, delta)
-        value = np.sum(matrixNew * Ruihua)
-        image[xNew, yNew] = value
+suanzi_x = np.array([[-1, 0, 1],
+                     [ -1, 0, 1],
+                     [ -1, 0, 1]])
+#
+# y方向的Prewitt算子
+suanzi_y = np.array([[-1,-1,-1],
+                     [ 0, 0, 0],
+                     [ 1, 1, 1]])
+
+RuiHua = np.array([[0,-1,0],
+                   [ -1, 3, -1],
+                   [0, -1, 0]])
 plt.figure(figsize=(15,8))
-plt.subplot(121)
+plt.subplot(231)
 plt.imshow(image_Gray, cmap='gray')
 
-plt.subplot(122)
-plt.imshow(cv2.cvtColor(image, cv2.COLOR_GRAY2RGB), cmap='gray')
+plt.subplot(232)
+image_x = imConv(image_Gray, suanzi_x,kernelDim)
+plt.imshow(image_x, cmap='gray')
+
+plt.subplot(233)
+image_y = imConv(image_Gray,suanzi_y, kernelDim)
+plt.imshow(image_y, cmap='gray')
+
+plt.subplot(234)
+# 得到梯度矩阵
+image_xy = np.sqrt(image_x**2+image_y**2)
+# 梯度矩阵统一到0-255
+image_xy = (255.0/image_xy.max())*image_xy
+plt.imshow(image_xy, cmap='gray')
+
+plt.subplot(235)
+plt.imshow(imConv(image_Gray, kernel, kernelDim), cmap='gray')
+
+plt.subplot(236)
+plt.imshow(imConv(image_Gray, RuiHua, kernelDim), cmap='gray')
 plt.show()
 
 
