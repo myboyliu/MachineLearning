@@ -1,38 +1,58 @@
-import cv2
-from matplotlib import pyplot as plt
-from math import sqrt
-from skimage.feature import blob_dog, blob_log, blob_doh
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import animation
 
-image_gray = cv2.imread('images/12/Lena.png', cv2.IMREAD_GRAYSCALE)
-print(image_gray)
-blobs_log = blob_log(image_gray, max_sigma=30, num_sigma=10, threshold=.1)
+# New figure with white background
+fig = plt.figure(figsize=(6,6), facecolor='white')
 
-# Compute radii in the 3rd column.
-blobs_log[:, 2] = blobs_log[:, 2] * sqrt(2)
+# New axis over the whole figure, no frame and a 1:1 aspect ratio
+ax = fig.add_axes([0, 0, 1, 1], frameon=False, aspect=1)
 
-blobs_dog = blob_dog(image_gray, max_sigma=30, threshold=.1)
-blobs_dog[:, 2] = blobs_dog[:, 2] * sqrt(2)
+# Number of ring
+n = 50
+size_min = 50
+size_max = 50 ** 2
 
-blobs_doh = blob_doh(image_gray, max_sigma=30, threshold=.01)
+# Ring position
+pos = np.random.uniform(0, 1, (n,2))
 
-blobs_list = [blobs_log, blobs_dog, blobs_doh]
-colors = ['yellow', 'lime', 'red']
-titles = ['Laplacian of Gaussian', 'Difference of Gaussian',
-          'Determinant of Hessian']
-sequence = zip(blobs_list, colors, titles)
+# Ring colors
+color = np.ones((n,4)) * (0,0,0,1)
+# Alpha color channel geos from 0(transparent) to 1(opaque)
+color[:,3] = np.linspace(0, 1, n)
 
-fig, axes = plt.subplots(1, 3, figsize=(9, 3), sharex=True, sharey=True,
-                         subplot_kw={'adjustable': 'box-forced'})
-ax = axes.ravel()
+# Ring sizes
+size = np.linspace(size_min, size_max, n)
 
-for idx, (blobs, color, title) in enumerate(sequence):
-    ax[idx].set_title(title)
-    ax[idx].imshow(image_gray, cmap='gray', interpolation='nearest')
-    for blob in blobs:
-        y, x, r = blob
-        c = plt.Circle((x, y), r, color=color, linewidth=2, fill=False)
-        ax[idx].add_patch(c)
-    ax[idx].set_axis_off()
+# Scatter plot
+scat = ax.scatter(pos[:,0], pos[:,1], s=size, lw=0.5, edgecolors=color, facecolors='None')
 
-plt.tight_layout()
+# Ensure limits are [0,1] and remove ticks
+ax.set_xlim(0, 1), ax.set_xticks([])
+ax.set_ylim(0, 1), ax.set_yticks([])
+
+def update(frame):
+    global pos, color, size
+
+    # Every ring is made more transparnt
+    color[:, 3] = np.maximum(0, color[:,3]-1.0/n)
+
+    # Each ring is made larger
+    size += (size_max - size_min) / n
+
+    # Reset specific ring
+    i = frame % 50
+    pos[i] = np.random.uniform(0, 1, 2)
+    size[i] = size_min
+    color[i, 3] = 1
+
+    # Update scatter object
+    scat.set_edgecolors(color)
+    scat.set_sizes(size)
+    scat.set_offsets(pos)
+
+    # Return the modified object
+    return scat,
+
+anim = animation.FuncAnimation(fig, update, interval=10, blit=True, frames=200)
 plt.show()
