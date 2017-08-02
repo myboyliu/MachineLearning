@@ -1,58 +1,60 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import animation
+import tensorflow as tf
+import tensorflow.examples.tutorials.mnist.input_data as input_data
 
-# New figure with white background
-fig = plt.figure(figsize=(6,6), facecolor='white')
+mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 
-# New axis over the whole figure, no frame and a 1:1 aspect ratio
-ax = fig.add_axes([0, 0, 1, 1], frameon=False, aspect=1)
+batch_size = 100
+n_batch = mnist.train.num_examples // batch_size
 
-# Number of ring
-n = 50
-size_min = 50
-size_max = 50 ** 2
+x = tf.placeholder(tf.float32, [None, 784])
+y = tf.placeholder(tf.float32, [None, 10])
+keep_prob = tf.placeholder(tf.float32)
 
-# Ring position
-pos = np.random.uniform(0, 1, (n,2))
+W1 = tf.Variable(tf.truncated_normal([784, 300], stddev=0.1)) # 不要初始化为0
+b1 = tf.Variable(tf.zeros([300]) + 0.1)
+L1 = tf.nn.tanh(tf.matmul(x, W1) + b1)
+L1_drop = tf.nn.dropout(L1, keep_prob=keep_prob)
 
-# Ring colors
-color = np.ones((n,4)) * (0,0,0,1)
-# Alpha color channel geos from 0(transparent) to 1(opaque)
-color[:,3] = np.linspace(0, 1, n)
+W2 = tf.Variable(tf.truncated_normal([300, 300], stddev=0.1)) # 不要初始化为0
+b2 = tf.Variable(tf.zeros([300]) + 0.1)
+L2 = tf.nn.tanh(tf.matmul(L1_drop, W2) + b2)
+L2_drop = tf.nn.dropout(L2, keep_prob=keep_prob)
 
-# Ring sizes
-size = np.linspace(size_min, size_max, n)
+W3 = tf.Variable(tf.truncated_normal([300, 100], stddev=0.1)) # 不要初始化为0
+b3 = tf.Variable(tf.zeros([100]) + 0.1)
+L3 = tf.nn.tanh(tf.matmul(L2_drop, W3) + b3)
+L3_drop = tf.nn.dropout(L3, keep_prob=keep_prob)
 
-# Scatter plot
-scat = ax.scatter(pos[:,0], pos[:,1], s=size, lw=0.5, edgecolors=color, facecolors='None')
+W4 = tf.Variable(tf.truncated_normal([100, 10], stddev=0.1)) # 不要初始化为0
+b4 = tf.Variable(tf.zeros([10]) + 0.1)
 
-# Ensure limits are [0,1] and remove ticks
-ax.set_xlim(0, 1), ax.set_xticks([])
-ax.set_ylim(0, 1), ax.set_yticks([])
+prediction = tf.nn.softmax(tf.matmul(L3_drop, W4) + b4)
 
-def update(frame):
-    global pos, color, size
+# loss = tf.reduce_mean(tf.square(y - prediction))
 
-    # Every ring is made more transparnt
-    color[:, 3] = np.maximum(0, color[:,3]-1.0/n)
+loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y,
+                                                              logits=prediction)) #交叉熵明显收敛更快，而且运行速度也快
+train_step = tf.train.GradientDescentOptimizer(0.2).minimize(loss)
+init = tf.global_variables_initializer()
+correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(prediction, 1))
 
-    # Each ring is made larger
-    size += (size_max - size_min) / n
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-    # Reset specific ring
-    i = frame % 50
-    pos[i] = np.random.uniform(0, 1, 2)
-    size[i] = size_min
-    color[i, 3] = 1
+with tf.Session() as sess:
+    sess.run(init)
 
-    # Update scatter object
-    scat.set_edgecolors(color)
-    scat.set_sizes(size)
-    scat.set_offsets(pos)
+    for epoch in range(31):
+        for batch in range(n_batch):
+            batch_xs, batchys = mnist.train.next_batch(batch_size)
+            sess.run(train_step, feed_dict={x : batch_xs, y : batchys, keep_prob:0.7})
 
-    # Return the modified object
-    return scat,
+        test_acc = sess.run(accuracy, feed_dict={x:mnist.test.images,
+                                                 y:mnist.test.labels,
+                                                 keep_prob:0.7})
+        train_acc = sess.run(accuracy, feed_dict={x:mnist.train.images,
+                                                  y:mnist.train .labels,
+                                                  keep_prob:0.7})
+        print("Iter" + str(epoch) + ", Testing Accurancy " + str(test_acc) + ", Training Accurancy " + str(train_acc))
 
-anim = animation.FuncAnimation(fig, update, interval=10, blit=True, frames=200)
-plt.show()
+
+    print("Done")
