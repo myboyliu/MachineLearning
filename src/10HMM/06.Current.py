@@ -79,7 +79,7 @@ if __name__ == "__main__":
         plt.title(u'第%d组份的概率分布' % (component+1), fontsize=16)
     plt.suptitle(u'原始电流/组份与时间的变化关系', fontsize=18)
     plt.tight_layout(pad=1, rect=(0, 0, 1, 0.96))
-    # plt.savefig('24.png')
+    # plt.savefig('19.png')
 
     plt.figure(num=2, facecolor='w', figsize=(8, 8))
     for component in np.arange(n_components):
