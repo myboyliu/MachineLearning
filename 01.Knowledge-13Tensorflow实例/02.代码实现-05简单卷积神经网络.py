@@ -57,12 +57,36 @@ def FullyConnected(x, W, b, activate=tf.nn.relu, act_name='relu'):
 
     return y
 
+def EvaluateModelOnDataset(sess, images, labels):
+    n_samples = images.shape[0]
+    per_batch_size = 100
+    loss = 0
+    acc = 0
+
+    if (n_samples <= per_batch_size): #样本比较少，一次评估
+        batch_count = 1
+        loss, acc = sess.run([cross_entropy_loss, accuracy],
+                             feed_dict={X_origin : images, Y_true : labels, learning_rate : learning_rate_init})
+    else: #样本比较大，分批次评估
+        batch_count = int(n_samples / per_batch_size)
+        batch_start = 0
+        for idx in range(batch_count):
+            batch_loss, batch_acc = sess.run([cross_entropy_loss, accuracy],
+                                             feed_dict={X_origin : images[batch_start:batch_start + per_batch_size, :],
+                                                        Y_true: labels[batch_start:batch_start + per_batch_size, :],
+                                                        learning_rate : learning_rate_init})
+            batch_start += per_batch_size
+            loss += batch_loss
+            acc += batch_acc
+
+    return loss / batch_count, acc / batch_count
+
 if __name__ == '__main__':
     with tf.Graph().as_default():
         # 输入
         with tf.name_scope('Inputs'):
             X_origin = tf.placeholder(tf.float32, [None, n_input], name='X_origin')
-            Y_true = tf.placeholder(tf.float32, [None, n_input], name='Y_true')
+            Y_true = tf.placeholder(tf.float32, [None, n_classes], name='Y_true')
             X_image = tf.reshape(X_origin, [-1,28,28,1])
 
         #前向推断
@@ -115,12 +139,12 @@ if __name__ == '__main__':
         # summary_writer = tf.summary.FileWriter(logdir='../logs/05/', graph=tf.get_default_graph())
         # summary_writer.close()
         mnist = input_data.read_data_sets('../MNIST_data/', one_hot=True)
-        result_list = list()
-        result_list.append(['learning_rate', learning_rate,
+        results_list = list()
+        results_list.append(['learning_rate', learning_rate_init,
                             'training_epochs', training_epochs,
                             'batch_size', batch_size,
                             'display_step', display_step])
-        result_list.append(['train_step', 'train_loss', 'validation_loss',
+        results_list.append(['train_step', 'train_loss', 'validation_loss',
                             'train_step', 'train_accuracy', 'validation_accuracy'])
         with tf.Session() as sess:
             sess.run(init)
@@ -139,7 +163,30 @@ if __name__ == '__main__':
                     training_step += 1
                     if training_step % display_step == 0:
                         start_idx = max(0, (batch_idx - display_step) * batch_size)
-                        edit_idx = batch_idx * batch_size
-                        train_loss, train_acc =EvaluteModelOnDataset()
+                        end_idx = batch_idx * batch_size
+                        train_loss, train_acc =EvaluateModelOnDataset(sess,mnist.train.images[start_idx:end_idx, :],
+                                                                      mnist.train.labels[start_idx:end_idx, :])
+                        print("Training Step: " + str(training_step) +
+                              ", Training Loss= " + "{:.6f}".format(train_loss) +
+                              ", Training Accuracy= " + "{:.5f}".format(train_acc))
 
+                        validation_loss, validation_acc = EvaluateModelOnDataset(sess, mnist.validation.images,mnist.validation.labels)
+                        print("Training Step: " + str(training_step) +
+                              ", Validation Loss= " + "{:.6f}".format(validation_loss) +
+                              ", Validation Accuracy= " + "{:.5f}".format(validation_acc))
 
+                        results_list.append([training_step, train_loss, validation_loss,
+                                            training_step, train_acc, validation_acc])
+
+            print("训练完毕")
+            test_samples_count = mnist.test.num_examples
+            test_loss, test_accuracy = EvaluateModelOnDataset(sess, mnist.test.images, mnist.test.labels)
+            print("Testing Samples Count:", test_samples_count)
+            print("Testing Loss:", test_loss)
+            print("Testing Accuracy:", test_accuracy)
+            results_list.append(['test step', 'loss', test_loss, 'accuracy', test_accuracy])
+
+            results_file = open('../logs/011305_evaluate_results.csv', 'w', newline='')
+            csv_writer = csv.writer(results_file, dialect='excel')
+            for row in results_list:
+                csv_writer.writerow(row)
