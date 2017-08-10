@@ -4,6 +4,7 @@
 卷积层：conv2d = 5 * 5 * 1 - 输出输出：data = 24 * 24 * K(K就是卷积核的个数)
 激活层ReLU- 输出数据：data = 24 * 24 * K
 池化层：pool2d - MaxPool 2 * 2 步长S=2 输出数据为12 * 12 * K
+全连接层-非线性 units = 1024 输出数据:1024(新增的层)
 全连接层-线性 units = 10 输出数据(特征):logits = 1 * 1 * 10(最终需要分10类：0-9)
 Softmax：计算属于每个分类的概率
 '''
@@ -18,8 +19,9 @@ training_epochs = 1
 batch_size = 100
 display_step = 10
 
-conv1_kernel_num = 16
-
+conv1_kernel_num = 16 #卷积核数量
+fc1_units_num = 100 #非线性全连接层神经元个数
+keep_prob_init = 0.5
 n_input = 784
 n_classes = 10
 
@@ -35,8 +37,8 @@ def BiasesVariable(shape, name_str, stddev=0.00001):
 # 卷积层不做降采样
 def Conv2d(x, W, b, stride=1, padding='SAME'):
     with tf.name_scope('Wx_b'):
-       y = tf.nn.conv2d(x, W, strides=[1, stride, stride, 1], padding=padding)
-       y = tf.nn.bias_add(y, b)
+        y = tf.nn.conv2d(x, W, strides=[1, stride, stride, 1], padding=padding)
+        y = tf.nn.bias_add(y, b)
     return y
 
 def Activation(x, activation=tf.nn.relu, name='relu'):
@@ -104,10 +106,20 @@ if __name__ == '__main__':
             with tf.name_scope('FeatsReshape'): #将二维特征图变为一维特征向量，得到的是conv1_kernel_num个特征图，每个特征图是12*12的
                 features = tf.reshape(pool_out, [-1, 12 * 12 * conv1_kernel_num])
 
+            with tf.name_scope('FC_ReLU'): #非线性全连接层
+
+                weights = WeightsVariable(shape=[12 * 12 * conv1_kernel_num, fc1_units_num], name_str='weights')
+                biases = BiasesVariable(shape=[fc1_units_num], name_str='biases')
+                fc1_out = FullyConnected(features, weights, biases,
+                                        activate=tf.nn.relu, # 恒等映射，没有经过激活函数，所以没有任何改变
+                                        act_name='ReLU')
+            with tf.name_scope('DropOut'):
+                keep_prob = tf.placeholder(tf.float32)
+                fc_dropout = tf.nn.dropout(fc1_out, keep_prob=keep_prob)
             with tf.name_scope('FC_Linear'): #全连接层
-                weights = WeightsVariable(shape=[12 * 12 * conv1_kernel_num, n_classes], name_str='weights')
+                weights = WeightsVariable(shape=[fc1_units_num, n_classes], name_str='weights')
                 biases = BiasesVariable(shape=[n_classes], name_str='biases')
-                Ypred_logits = FullyConnected(features, weights, biases,
+                Ypred_logits = FullyConnected(fc_dropout, weights, biases,
                                               activate=tf.identity, # 恒等映射，没有经过激活函数，所以没有任何改变
                                               act_name='identity')
 
@@ -151,12 +163,12 @@ if __name__ == '__main__':
         mnist = input_data.read_data_sets('../MNIST_data/', one_hot=True)
         results_list = list()
         results_list.append(['learning_rate', learning_rate_init,
-                            'training_epochs', training_epochs,
-                            'batch_size', batch_size,
-                            'display_step', display_step,
+                             'training_epochs', training_epochs,
+                             'batch_size', batch_size,
+                             'display_step', display_step,
                              'conv1_kernel_num', conv1_kernel_num])
         results_list.append(['train_step', 'train_loss', 'validation_loss',
-                            'train_step', 'train_accuracy', 'validation_accuracy'])
+                             'train_step', 'train_accuracy', 'validation_accuracy'])
         with tf.Session() as sess:
             sess.run(init)
             total_batches = int(mnist.train.num_examples / batch_size)
@@ -170,7 +182,8 @@ if __name__ == '__main__':
                     batch_x, batch_y = mnist.train.next_batch(batch_size)
                     sess.run(trainer, feed_dict={X_origin : batch_x,
                                                  Y_true : batch_y,
-                                                 learning_rate : learning_rate_init})
+                                                 learning_rate : learning_rate_init,
+                                                 keep_prob:keep_prob_init})
                     # training_step += 1 # global_step跟training_step是一个意思
                     training_step = sess.run(global_step) #跟上一句的效果是一样的
                     if training_step % display_step == 0:
@@ -188,7 +201,7 @@ if __name__ == '__main__':
                               ", Validation Accuracy= " + "{:.5f}".format(validation_acc))
 
                         results_list.append([training_step, train_loss, validation_loss,
-                                            training_step, train_acc, validation_acc])
+                                             training_step, train_acc, validation_acc])
 
             print("训练完毕")
             test_samples_count = mnist.test.num_examples
