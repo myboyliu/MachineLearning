@@ -21,6 +21,8 @@ training_epochs = 1
 batch_size = 100
 display_step = 10
 
+conv1_kernel_num = 16
+
 n_input = 784
 n_classes = 10
 
@@ -92,8 +94,8 @@ if __name__ == '__main__':
         #前向推断
         with tf.name_scope('Inference'):
             with tf.name_scope('Conv2d'): # 卷积层
-                weights = WeightsVariable(shape=[5,5,1,16], name_str='weights')
-                biases = BiasesVariable(shape=[16], name_str='biases')
+                weights = WeightsVariable(shape=[5,5,1,conv1_kernel_num], name_str='weights')
+                biases = BiasesVariable(shape=[conv1_kernel_num], name_str='biases')
                 conv_out = Conv2d(X_image, weights, biases, stride=1, padding='VALID')
 
             with tf.name_scope('Activate'):# 非线性激活层
@@ -102,11 +104,11 @@ if __name__ == '__main__':
             with tf.name_scope('Pool2d'): #池化层
                 pool_out = Pool2d(activate_out, pool=tf.nn.max_pool, k=2, stride=2)
 
-            with tf.name_scope('FeatsReshape'): #将二维特征图变为一维特征向量，得到的是16个特征图，每个特征图是12*12的
-                features = tf.reshape(pool_out, [-1, 12 * 12 * 16])
+            with tf.name_scope('FeatsReshape'): #将二维特征图变为一维特征向量，得到的是conv1_kernel_num个特征图，每个特征图是12*12的
+                features = tf.reshape(pool_out, [-1, 12 * 12 * conv1_kernel_num])
 
             with tf.name_scope('FC_Linear'): #全连接层
-                weights = WeightsVariable(shape=[12 * 12 * 16, n_classes], name_str='weights')
+                weights = WeightsVariable(shape=[12 * 12 * conv1_kernel_num, n_classes], name_str='weights')
                 biases = BiasesVariable(shape=[n_classes], name_str='biases')
                 Ypred_logits = FullyConnected(features, weights, biases,
                                               activate=tf.identity, # 恒等映射，没有经过激活函数，所以没有任何改变
@@ -122,12 +124,23 @@ if __name__ == '__main__':
         with tf.name_scope('Train'):
             learning_rate = tf.placeholder(tf.float32)
             optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
+            global_step = tf.Variable(0, name='global_step', trainable=False, dtype=tf.int64)
+            # optimizer = tf.train.AdagradDAOptimizer(learning_rate=learning_rate, global_step=global_step)
+            # optimizer = tf.train.AdadeltaOptimizer(learning_rate=learning_rate)
+            # optimizer = tf.train.AdagradOptimizer(learning_rate=learning_rate)
+            # optimizer = tf.train.ProximalGradientDescentOptimizer(learning_rate=learning_rate)
+            # optimizer = tf.train.ProximalAdagradOptimizer(learning_rate=learning_rate)
+            # optimizer = tf.train.RMSPropOptimizer(learning_rate=learning_rate)
+            # optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
+            # optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate, momentum=0.9)
+            # optimizer = tf.train.FtrlOptimizer(learning_rate=learning_rate)
             '''
             两个步骤：
             1.反向传播计算梯度
             2.利用梯度下降算法优化权重与偏置
             '''
-            trainer = optimizer.minimize(cross_entropy_loss)
+            #minimize更新参数后，这个global_step参数会自动加一,可以当做调用minimize的次数
+            trainer = optimizer.minimize(cross_entropy_loss, global_step=global_step)
 
         #定义模型评估层
         with tf.name_scope('Evaluate'):
@@ -143,7 +156,8 @@ if __name__ == '__main__':
         results_list.append(['learning_rate', learning_rate_init,
                             'training_epochs', training_epochs,
                             'batch_size', batch_size,
-                            'display_step', display_step])
+                            'display_step', display_step,
+                             'conv1_kernel_num', conv1_kernel_num])
         results_list.append(['train_step', 'train_loss', 'validation_loss',
                             'train_step', 'train_accuracy', 'validation_accuracy'])
         with tf.Session() as sess:
@@ -160,7 +174,8 @@ if __name__ == '__main__':
                     sess.run(trainer, feed_dict={X_origin : batch_x,
                                                  Y_true : batch_y,
                                                  learning_rate : learning_rate_init})
-                    training_step += 1
+                    # training_step += 1 # global_step跟training_step是一个意思
+                    training_step = sess.run(global_step) #跟上一句的效果是一样的
                     if training_step % display_step == 0:
                         start_idx = max(0, (batch_idx - display_step) * batch_size)
                         end_idx = batch_idx * batch_size
