@@ -37,7 +37,7 @@ import tensorflow.examples.tutorials.mnist.input_data as input_data
 mnist = input_data.read_data_sets("../MNIST_data/", one_hot=True)
 
 batch_size = 100
-n_batch = mnist.train.num_examples // batch_size
+n_batch = mnist.train.num_examples // batch_size # //表示整数除法
 
 x = tf.placeholder(tf.float32, [None, 784])
 y = tf.placeholder(tf.float32, [None, 10]) # 最后的输出是0~9这10个数字，所以是10
