@@ -29,7 +29,7 @@ training_epochs = 1
 batch_size = 100
 display_step = 10
 
-dataset_dir = '../Cifar10_data'
+dataset_dir = '../Total_Data/Cifar10_data'
 num_examples_per_epoch_for_train = cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN # 50000
 num_examples_per_epoch_for_eval = cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
 image_size = cifar10_input.IMAGE_SIZE
