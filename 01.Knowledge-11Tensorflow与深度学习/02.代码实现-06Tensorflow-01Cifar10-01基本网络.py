@@ -4,22 +4,17 @@
 卷积层1：5*5 卷积核个数为K1 步长为1，输出为24 * 24 * K1
 激活层1：ReLU
 池化层1：3*3 步长为2，输出为12 * 12 * K1
-LRN层1
 卷积层2：5*5 卷积核个数为K2 步长为1，12 * 12 * K2
 激活层2：ReLU
-LRN层2
 池化层2：3*3 步长为2 输出为6 * 6 * K2
 非线性全连接层1：神经元个数200(这一层相当于有200*6*6*K2个权重，以及200个偏置)，输出为200
 非线性全连接层1：神经元个数100(这一层相当于有100*200个权重，以及100个偏置)，输出为100
 线性全连接层：神经元个数10
 softmax层
-
-
-LRN层对于网络没有什么影响，所以到了VGG,GooleNet以及ResNet，都没有加入LRN层
 '''
 import tensorflow as tf
 import os
-import cifar10_input
+import cifar_input
 import numpy as np
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -30,11 +25,11 @@ batch_size = 100
 display_step = 10
 
 dataset_dir = '../Total_Data/Cifar10_data'
-num_examples_per_epoch_for_train = cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN # 50000
-num_examples_per_epoch_for_eval = cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
-image_size = cifar10_input.IMAGE_SIZE
+num_examples_per_epoch_for_train = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN # 50000
+num_examples_per_epoch_for_eval = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
+image_size = cifar_input.IMAGE_SIZE
 image_channel = 3
-n_classes = cifar10_input.NUM_CLASSES
+n_classes = cifar_input.NUM_CLASSES
 
 conv1_kernel_num = 32
 conv2_kernel_num = 32
@@ -78,19 +73,13 @@ def Inference(images_holder):
     with tf.name_scope('Pool2d_1'): #池化层1
         pool1_out = Pool2d(conv1_out, pool=tf.nn.max_pool, k=3, stride=2, padding='SAME')
 
-    with tf.name_scope('LRNormal_1'):
-        normal_out1 = tf.nn.lrn(pool1_out, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm1')
-
     with tf.name_scope('Conv2d_2'): # 卷积层2
         weights = WeightsVariable(shape=[5, 5, conv1_kernel_num, conv2_kernel_num], name_str='weights', stddev=5e-2)
         biases = BiasesVariable(shape=[conv2_kernel_num], name_str='biases', init_value=0.0)
-        conv2_out = Conv2d(normal_out1, weights, biases, stride=1, padding='SAME')
-
-    with tf.name_scope('LRNormal_2'):
-        normal_out2 = tf.nn.lrn(conv2_out, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm1')
+        conv2_out = Conv2d(pool1_out, weights, biases, stride=1, padding='SAME')
 
     with tf.name_scope('Pool2d_2'): #池化层2
-        pool2_out = Pool2d(normal_out2, pool=tf.nn.max_pool, k=3, stride=2, padding='SAME') #6 * 6 * 64
+        pool2_out = Pool2d(conv2_out, pool=tf.nn.max_pool, k=3, stride=2, padding='SAME') #6 * 6 * 64
 
     with tf.name_scope('FeatsReshape'): #将二维特征图变为一维特征向量，得到的是conv1_kernel_num个特征图，每个特征图是12*12的
         features = tf.reshape(pool2_out, [batch_size, -1]) # [batch_size, 2304] 2304 = 6 * 6 * 64
@@ -100,7 +89,7 @@ def Inference(images_holder):
         weights = WeightsVariable(shape=[feats_dim, fc1_units_num], name_str='weights', stddev=4e-2)
         biases = BiasesVariable(shape=[fc1_units_num], name_str='biases', init_value=0.1)
         fc1_out = FullyConnected(features, weights, biases,
-                                 activate=tf.nn.relu, act_name='relu')
+                                      activate=tf.nn.relu, act_name='relu')
 
     with tf.name_scope('FC2_nonlinear'): #非线性全连接层2
         weights = WeightsVariable(shape=[fc1_units_num, fc2_units_num], name_str='weights', stddev=4e-2)
@@ -112,7 +101,7 @@ def Inference(images_holder):
         weights = WeightsVariable(shape=[fc2_units_num, n_classes], name_str='weights', stddev=1.0 / fc2_units_num)
         biases = BiasesVariable(shape=[n_classes], name_str='biases', init_value=0.0)
         logits = FullyConnected(fc2_out, weights, biases,
-                                activate=tf.identity, act_name='linear')
+                                 activate=tf.identity, act_name='linear')
 
     return logits
 
@@ -125,7 +114,7 @@ def get_distored_train_batch(data_dir, batch_size):
         raise ValueError('Please supply a data_dir')
 
     data_dir = os.path.join(data_dir, 'cifar-10-batches-bin')
-    images, labels = cifar10_input.distorted_inputs(data_dir=data_dir, batch_size=batch_size)
+    images, labels = cifar_input.distorted_inputs(data_dir=data_dir, batch_size=batch_size)
     return images, labels
 
 '''
@@ -135,7 +124,7 @@ def get_undistored_eval_batch(eval_data, data_dir, batch_size):
     if not data_dir:
         raise ValueError('Please supply a data_dir')
     data_dir = os.path.join(data_dir, 'cifar-10-batches-bin')
-    images, labels = cifar10_input.inputs(eval_data=eval_data, data_dir=data_dir, batch_size=batch_size)
+    images, labels = cifar_input.inputs(eval_data=eval_data, data_dir=data_dir, batch_size=batch_size)
     return images, labels
 
 if __name__ == '__main__':
