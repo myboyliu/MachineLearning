@@ -114,15 +114,15 @@ def inputs(cifar10or20or100, eval_data, data_dir, batch_size, image_size = 32):
             filenames = [os.path.join(data_dir, 'data_batch_%d.bin' %i) for i in xrange(1, 6)]
             num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
         else:
-            filenames = os.path.join(data_dir, 'test_batch.bin')
+            filenames = [os.path.join(data_dir, 'test_batch.bin')]
             num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
     elif cifar10or20or100 == 20 or cifar10or20or100 == 100:
         read_cifar = read_cifar100
         if not eval_data:
-            filenames = os.path.join(data_dir, 'train.bin')
+            filenames = [os.path.join(data_dir, 'train.bin')]
             num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
         else:
-            filenames = os.path.join(data_dir, 'test.bin')
+            filenames = [os.path.join(data_dir, 'test.bin')]
             num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
     if cifar10or20or100 ==  10:
         coarse_or_fine = None
@@ -163,11 +163,11 @@ def distorted_inputs(cifar10or20or100, data_dir, batch_size, image_size = 32):
         read_cifar = read_cifar10
         coarse_or_fine = None
     elif cifar10or20or100 == 20:
-        filenames = os.path.join(data_dir, 'train.bin')
+        filenames = [os.path.join(data_dir, 'train.bin')]
         read_cifar = read_cifar100
         coarse_or_fine = 'coarse'
     else:
-        filenames = os.path.join(data_dir, 'train.bin')
+        filenames = [os.path.join(data_dir, 'train.bin')]
         read_cifar = read_cifar100
         coarse_or_fine = 'fine'
 
