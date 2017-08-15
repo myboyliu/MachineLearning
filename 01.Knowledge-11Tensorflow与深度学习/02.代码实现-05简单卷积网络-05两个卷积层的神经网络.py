@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
 batch_size = 100
-mnist = input_data.read_data_sets("../MNIST_data/", one_hot=True)
+mnist = input_data.read_data_sets("../Total_Data/MNIST_data/", one_hot=True)
 n_batch = mnist.train.num_examples // batch_size
 
 x = tf.placeholder(tf.float32, [None, 784])

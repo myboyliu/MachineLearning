@@ -67,7 +67,8 @@ def EvaluateModelOnDataset(sess, images, labels):
     if (n_samples <= per_batch_size): #样本比较少，一次评估
         batch_count = 1
         loss, acc = sess.run([cross_entropy_loss, accuracy],
-                             feed_dict={X_origin : images, Y_true : labels, learning_rate : learning_rate_init})
+                             feed_dict={X_origin : images, Y_true : labels, learning_rate : learning_rate_init,
+                                        keep_prob:keep_prob_init})
     else: #样本比较大，分批次评估
         batch_count = int(n_samples / per_batch_size)
         batch_start = 0
@@ -75,7 +76,8 @@ def EvaluateModelOnDataset(sess, images, labels):
             batch_loss, batch_acc = sess.run([cross_entropy_loss, accuracy],
                                              feed_dict={X_origin : images[batch_start:batch_start + per_batch_size, :],
                                                         Y_true: labels[batch_start:batch_start + per_batch_size, :],
-                                                        learning_rate : learning_rate_init})
+                                                        learning_rate : learning_rate_init,
+                                                        keep_prob:keep_prob_init})
             batch_start += per_batch_size
             loss += batch_loss
             acc += batch_acc
@@ -160,7 +162,7 @@ if __name__ == '__main__':
 
         # summary_writer = tf.summary.FileWriter(logdir='../logs/05/', graph=tf.get_default_graph())
         # summary_writer.close()
-        mnist = input_data.read_data_sets('../MNIST_data/', one_hot=True)
+        mnist = input_data.read_data_sets('../Total_Data/MNIST_data/', one_hot=True)
         results_list = list()
         results_list.append(['learning_rate', learning_rate_init,
                              'training_epochs', training_epochs,
@@ -211,7 +213,7 @@ if __name__ == '__main__':
             print("Testing Accuracy:", test_accuracy)
             results_list.append(['test step', 'loss', test_loss, 'accuracy', test_accuracy])
 
-            results_file = open('../logs/011305_evaluate_results.csv', 'w', newline='')
+            results_file = open('../logs/SummaryFiles/result_0111020503.csv', 'w', newline='')
             csv_writer = csv.writer(results_file, dialect='excel')
             for row in results_list:
                 csv_writer.writerow(row)

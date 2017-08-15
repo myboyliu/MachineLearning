@@ -16,6 +16,7 @@ import tensorflow as tf
 import os
 import cifar_input
 import numpy as np
+import csv
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -29,7 +30,7 @@ num_examples_per_epoch_for_train = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN 
 num_examples_per_epoch_for_eval = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
 image_size = cifar_input.IMAGE_SIZE
 image_channel = 3
-n_classes = cifar_input.NUM_CLASSES
+n_classes = cifar_input.NUM_CLASSES_CIFAR10
 
 conv1_kernel_num = 32
 conv2_kernel_num = 32
@@ -114,7 +115,7 @@ def get_distored_train_batch(data_dir, batch_size):
         raise ValueError('Please supply a data_dir')
 
     data_dir = os.path.join(data_dir, 'cifar-10-batches-bin')
-    images, labels = cifar_input.distorted_inputs(data_dir=data_dir, batch_size=batch_size)
+    images, labels = cifar_input.distorted_inputs(cifar10or20or100=10, data_dir=data_dir, batch_size=batch_size)
     return images, labels
 
 '''
@@ -124,7 +125,7 @@ def get_undistored_eval_batch(eval_data, data_dir, batch_size):
     if not data_dir:
         raise ValueError('Please supply a data_dir')
     data_dir = os.path.join(data_dir, 'cifar-10-batches-bin')
-    images, labels = cifar_input.inputs(eval_data=eval_data, data_dir=data_dir, batch_size=batch_size)
+    images, labels = cifar_input.inputs(cifar10or20or100=10, eval_data=eval_data, data_dir=data_dir, batch_size=batch_size)
     return images, labels
 
 if __name__ == '__main__':
@@ -165,8 +166,19 @@ if __name__ == '__main__':
                                                                  batch_size=batch_size)
         init_op = tf.global_variables_initializer()
 
-        summary_writer = tf.summary.FileWriter(logdir='../logs', graph=tf.get_default_graph())
-        summary_writer.close()
+        # summary_writer = tf.summary.FileWriter(logdir='../logs', graph=tf.get_default_graph())
+        # summary_writer.close()
+
+        results_list = list()
+        results_list.append(['learning_rate', learning_rate_init,
+                             'training_epochs', training_epochs,
+                             'batch_size', batch_size,
+                             'display_step', display_step,
+                             'conv1_kernel_num', conv1_kernel_num,
+                             'conv2_kernel_num', conv2_kernel_num,
+                             'fc1_units_num', fc1_units_num,
+                             'fc2_units_num', fc2_units_num])
+        results_list.append(['train_step', 'train_loss', 'train_step', 'train_accuracy'])
 
         with tf.Session() as sess:
             sess.run(init_op)
@@ -189,6 +201,7 @@ if __name__ == '__main__':
                         predictions = sess.run([top_K_op], feed_dict={images_holder: images_batch,
                                                                       labels_holder : label_batch})
                         batch_accuracy = np.sum(predictions) / batch_size
+                        results_list.append([training_step, loss_value, training_step, batch_accuracy])
                         print("Training Step: " + str(training_step) +
                               ", Training Loss= " + "{:.6f}".format(loss_value) +
                               ", Training Accuracy= " + "{:.5f}".format(batch_accuracy))
@@ -209,4 +222,9 @@ if __name__ == '__main__':
                 correct_predicted += np.sum(predictions)
             accuracy_score = correct_predicted / total_examples
             print('--------->Accuracy on Test Examples: ', accuracy_score)
+            results_list.append(['Accuracy on Test Examples: ', accuracy_score])
 
+        results_file = open('../logs/SummaryFiles/results_0111020601.csv', 'w', newline='')
+        csv_writer = csv.writer(results_file, dialect='excel')
+        for row in results_list:
+            csv_writer.writerow(row)

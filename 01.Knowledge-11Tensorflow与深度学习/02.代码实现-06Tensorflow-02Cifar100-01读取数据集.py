@@ -11,7 +11,7 @@ import csv
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 learning_rate_init = 0.001
-training_epochs = 5
+training_epochs = 1
 batch_size = 100
 display_step = 10
 conv1_kernel_num = 64
@@ -26,7 +26,7 @@ num_examples_per_epoch_for_eval = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
 image_size = cifar_input.IMAGE_SIZE
 image_channel = cifar_input.IMAGE_DEPTH
 
-cifar10or20or100 = 100
+cifar10or20or100 = 10
 if cifar10or20or100 == 10:
     n_classes = cifar_input.NUM_CLASSES_CIFAR10
     dataset_dir = dataset_dir_cifar10
@@ -215,7 +215,7 @@ with tf.Graph().as_default():
         for epoch in range(training_epochs):
             for batch_idx in range(num_batches_per_epoch):
                 images_batch, labels_batch = sess.run([images_train, labels_train]) # 获取一个批次的数据
-                _, loss_value, avg_losses = sess.run([train_op, total_loss, average_losses],
+                _, loss_value = sess.run([train_op, total_loss],
                                                      feed_dict={images_holder: images_batch,
                                                                 labels_holder: labels_batch,
                                                                 learning_rate : learning_rate_init})
@@ -223,7 +223,7 @@ with tf.Graph().as_default():
                 if training_step % display_step == 0:
                     predictions = sess.run([top_K_op], feed_dict={images_holder: images_batch,
                                                                   labels_holder: labels_batch})
-                    batch_accuracy = np.sum(predictions) / batch_size
+                    batch_accuracy = np.sum(predictions) * 1.0 / batch_size
                     results_list.append([training_step, loss_value, training_step, batch_accuracy])
                     print("Training Epoch: " + str(epoch) +
                           ", Training Step: " + str(training_step) +

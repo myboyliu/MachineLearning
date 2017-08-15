@@ -148,7 +148,7 @@ if __name__ == '__main__':
 
         # summary_writer = tf.summary.FileWriter(logdir='../logs/05/', graph=tf.get_default_graph())
         # summary_writer.close()
-        mnist = input_data.read_data_sets('../MNIST_data/', one_hot=True)
+        mnist = input_data.read_data_sets('../Total_Data/MNIST_data/', one_hot=True)
         results_list = list()
         results_list.append(['learning_rate', learning_rate_init,
                             'training_epochs', training_epochs,
@@ -198,7 +198,7 @@ if __name__ == '__main__':
             print("Testing Accuracy:", test_accuracy)
             results_list.append(['test step', 'loss', test_loss, 'accuracy', test_accuracy])
 
-            results_file = open('../logs/011305_evaluate_results.csv', 'w', newline='')
+            results_file = open('../logs/SummaryFiles/result_0111020501.csv', 'w', newline='')
             csv_writer = csv.writer(results_file, dialect='excel')
             for row in results_list:
                 csv_writer.writerow(row)
