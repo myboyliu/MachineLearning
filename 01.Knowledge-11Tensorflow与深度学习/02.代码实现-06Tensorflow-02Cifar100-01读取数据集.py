@@ -11,7 +11,7 @@ import csv
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 learning_rate_init = 0.001
-training_epochs = 1
+training_epochs = 5
 batch_size = 100
 display_step = 10
 conv1_kernel_num = 64
@@ -26,7 +26,7 @@ num_examples_per_epoch_for_eval = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
 image_size = cifar_input.IMAGE_SIZE
 image_channel = cifar_input.IMAGE_DEPTH
 
-cifar10or20or100 = 10
+cifar10or20or100 = 100
 if cifar10or20or100 == 10:
     n_classes = cifar_input.NUM_CLASSES_CIFAR10
     dataset_dir = dataset_dir_cifar10
@@ -57,7 +57,7 @@ def get_undistorted_eval_batch(data_dir, eval_data, batch_size):
     return images, labels#labels没有进行one-hot编码
 
 def WeightsVariable(shape, name_str, stddev = 0.1):
-    initial = tf.truncated_normal(shape, stddev, dtype=tf.float32)
+    initial = tf.truncated_normal(shape=shape, stddev=stddev, dtype=tf.float32)
     return tf.Variable(initial_value=initial, dtype=tf.float32, name=name_str)
 
 def BiasesVariable(shape, name_str, init_value):
@@ -185,10 +185,10 @@ with tf.Graph().as_default():
     merged_summaries = tf.summary.merge_all()
     init_op = tf.global_variables_initializer()
 
-    print('把计算图写入事件文件')
-    summary_writer = tf.summary.FileWriter(logdir='../logs')
-    summary_writer.add_graph(graph=tf.get_default_graph())
-    summary_writer.flush()
+    # print('把计算图写入事件文件')
+    # summary_writer = tf.summary.FileWriter(logdir='../logs')
+    # summary_writer.add_graph(graph=tf.get_default_graph())
+    # summary_writer.flush()
 
     results_list = list()
     results_list.append(['learning_rate', learning_rate_init,
@@ -231,10 +231,10 @@ with tf.Graph().as_default():
                           ", Training Accuracy= " + "{:.5f}".format(batch_accuracy))
                     summaries_str = sess.run(merged_summaries, feed_dict={images_holder:images_batch,
                                                                           labels_holder:labels_batch})
-                    summary_writer.add_summary(summary=summaries_str, global_step=training_step)
-                    summary_writer.flush()
+                    # summary_writer.add_summary(summary=summaries_str, global_step=training_step)
+                    # summary_writer.flush()
 
-        summary_writer.close()
+        # summary_writer.close()
         print('训练完毕')
 
         print('==>>>>>>>>>>==开始在测试集上评估模型==<<<<<<<<<<==')
@@ -254,7 +254,7 @@ with tf.Graph().as_default():
         print('--------->Accuracy on Test Examples: ', accuracy_score)
         results_list.append(['Accuracy on Test Examples: ', accuracy_score])
 
-        results_file = open('../logs/SummaryFiles/results_0111020602_cifar10.csv', 'w', newline='')
+        results_file = open('../logs/SummaryFiles/result_0111020601_20.csv', 'w', newline='')
         csv_writer = csv.writer(results_file, dialect='excel')
         for row in results_list:
             csv_writer.writerow(row)

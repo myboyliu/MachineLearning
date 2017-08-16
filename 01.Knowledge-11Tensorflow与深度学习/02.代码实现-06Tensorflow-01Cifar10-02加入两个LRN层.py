@@ -33,8 +33,8 @@ dataset_dir = '../Total_Data/Cifar10_data'
 num_examples_per_epoch_for_train = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN # 50000
 num_examples_per_epoch_for_eval = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
 image_size = cifar_input.IMAGE_SIZE
-image_channel = 3
-n_classes = cifar_input.NUM_CLASSES
+image_channel = cifar_input.IMAGE_DEPTH
+n_classes = cifar_input.NUM_CLASSES_CIFAR10
 
 conv1_kernel_num = 32
 conv2_kernel_num = 32
@@ -42,7 +42,7 @@ fc1_units_num = 192
 fc2_units_num = 96
 
 def WeightsVariable(shape, name_str, stddev = 0.1):
-    initial = tf.truncated_normal(shape, stddev, dtype=tf.float32)
+    initial = tf.truncated_normal(shape=shape, stddev=stddev, dtype=tf.float32)
     return tf.Variable(initial_value=initial, dtype=tf.float32, name=name_str)
 
 def BiasesVariable(shape, name_str, init_value):
@@ -125,7 +125,7 @@ def get_distored_train_batch(data_dir, batch_size):
         raise ValueError('Please supply a data_dir')
 
     data_dir = os.path.join(data_dir, 'cifar-10-batches-bin')
-    images, labels = cifar_input.distorted_inputs(data_dir=data_dir, batch_size=batch_size)
+    images, labels = cifar_input.distorted_inputs(cifar10or20or100=10, data_dir=data_dir, batch_size=batch_size)
     return images, labels
 
 '''
@@ -135,7 +135,7 @@ def get_undistored_eval_batch(eval_data, data_dir, batch_size):
     if not data_dir:
         raise ValueError('Please supply a data_dir')
     data_dir = os.path.join(data_dir, 'cifar-10-batches-bin')
-    images, labels = cifar_input.inputs(eval_data=eval_data, data_dir=data_dir, batch_size=batch_size)
+    images, labels = cifar_input.inputs(cifar10or20or100=10, eval_data=eval_data, data_dir=data_dir, batch_size=batch_size)
     return images, labels
 
 if __name__ == '__main__':
@@ -176,8 +176,8 @@ if __name__ == '__main__':
                                                                  batch_size=batch_size)
         init_op = tf.global_variables_initializer()
 
-        summary_writer = tf.summary.FileWriter(logdir='../logs', graph=tf.get_default_graph())
-        summary_writer.close()
+        # summary_writer = tf.summary.FileWriter(logdir='../logs', graph=tf.get_default_graph())
+        # summary_writer.close()
 
         with tf.Session() as sess:
             sess.run(init_op)

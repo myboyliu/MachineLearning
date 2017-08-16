@@ -1,23 +1,62 @@
-import tensorflow as tf
-import numpy as np
-import os
-import sys
-import urllib
-import tarfile
+import csv
 
-dest_directory = 'Cifar10_data'
-DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz'
-if not os.path.exists(dest_directory):
-    os.makedirs(dest_directory)
-filename = DATA_URL.split('/')[-1]
-filepath = os.path.join(dest_directory, filename)
-if not os.path.exists(filepath):
-    def _progress(count, block_size, total_size):
-        sys.stdout.write('\r>> Downloading %s %.1f%%' %(filename, float(count * block_size) / float(total_size) * 100.0))
-        sys.stdout.flush()
-    filepath, _ = urllib.request.urlretrieve(DATA_URL, filepath, _progress)
+results_list = list()
+results_list.append(['learning_rate', 0.001, 'training_epochs', 1, 'batch_size', 100, 'display_step', 10, 'conv1_kernel_num', 32, 'conv2_kernel_num', 32, 'fc1_units_num', 192, 'fc2_units_num', 96])
+results_list.append(['train_step', 'train_loss', 'train_step', 'train_accuracy'])
+results_list.append([10, 2.303962, 10, 0.14000000000000001])
+results_list.append([20, 2.3012452, 20, 0.17999999999999999])
+results_list.append([30, 2.3014922, 30, 0.12])
+results_list.append([40, 2.3021967, 40, 0.11])
+results_list.append([50, 2.3064289, 50, 0.080000000000000002])
+results_list.append([60, 2.3007708, 60, 0.20999999999999999])
+results_list.append([70, 2.3008418, 70, 0.23999999999999999])
+results_list.append([80, 2.2956612, 80, 0.12])
+results_list.append([90, 2.2955515, 90, 0.20000000000000001])
+results_list.append([100, 2.2641342, 100, 0.20999999999999999])
+results_list.append([110, 2.2163084, 110, 0.11])
+results_list.append([120, 2.0942793, 120, 0.28999999999999998])
+results_list.append([130, 2.0198843, 130, 0.34999999999999998])
+results_list.append([140, 2.1236637, 140, 0.31])
+results_list.append([150, 1.9117557, 150, 0.44])
+results_list.append([160, 1.9982234, 160, 0.29999999999999999])
+results_list.append([170, 2.025161, 170, 0.35999999999999999])
+results_list.append([180, 1.8999573, 180, 0.29999999999999999])
+results_list.append([190, 1.73823, 190, 0.45000000000000001])
+results_list.append([200, 1.7542382, 200, 0.34999999999999998])
+results_list.append([210, 1.8341858, 210, 0.40000000000000002])
+results_list.append([220, 1.6742517, 220, 0.52000000000000002])
+results_list.append([230, 1.7502176, 230, 0.38])
+results_list.append([240, 1.7626196, 240, 0.39000000000000001])
+results_list.append([250, 1.7726221, 250, 0.45000000000000001])
+results_list.append([260, 1.6291236, 260, 0.52000000000000002])
+results_list.append([270, 1.6858062, 270, 0.46000000000000002])
+results_list.append([280, 1.5823153, 280, 0.54000000000000004])
+results_list.append([290, 1.5685161, 290, 0.47999999999999998])
+results_list.append([300, 1.5068551, 300, 0.56999999999999995])
+results_list.append([310, 1.7353839, 310, 0.44])
+results_list.append([320, 1.5950415, 320, 0.46000000000000002])
+results_list.append([330, 1.4434476, 330, 0.51000000000000001])
+results_list.append([340, 1.6317973, 340, 0.56000000000000005])
+results_list.append([350, 1.6148727, 350, 0.52000000000000002])
+results_list.append([360, 1.5263243, 360, 0.54000000000000004])
+results_list.append([370, 1.4682437, 370, 0.56999999999999995])
+results_list.append([380, 1.6147864, 380, 0.45000000000000001])
+results_list.append([390, 1.7013316, 390, 0.47999999999999998])
+results_list.append([400, 1.4511611, 400, 0.56999999999999995])
+results_list.append([410, 1.4362977, 410, 0.56000000000000005])
+results_list.append([420, 1.5691944, 420, 0.54000000000000004])
+results_list.append([430, 1.4258255, 430, 0.63])
+results_list.append([440, 1.4498453, 440, 0.59999999999999998])
+results_list.append([450, 1.7334553, 450, 0.48999999999999999])
+results_list.append([460, 1.4157214, 460, 0.58999999999999997])
+results_list.append([470, 1.3717141, 470, 0.60999999999999999])
+results_list.append([480, 1.3164399, 480, 0.62])
+results_list.append([490, 1.3983768, 490, 0.60999999999999999])
+results_list.append([500, 1.4074243, 500, 0.64000000000000001])
+results_list.append(['Accuracy on Test Examples: ', 0.48959999999999998])
 
-    print()
-    statinfo = os.stat(filepath)
-    print('Successfully downloaded', filename, statinfo.st_size, 'bytes.')
-tarfile.open(filepath, 'r:gz').extractall(dest_directory)
+results_file = open('logs/SummaryFiles/result_0111020601.csv', 'w', newline='')
+csv_writer = csv.writer(results_file, dialect='excel')
+for row in results_list:
+    print(row)
+    csv_writer.writerow(row)

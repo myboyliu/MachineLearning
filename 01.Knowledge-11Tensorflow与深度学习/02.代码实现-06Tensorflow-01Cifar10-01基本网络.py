@@ -38,12 +38,12 @@ fc1_units_num = 192
 fc2_units_num = 96
 
 def WeightsVariable(shape, name_str, stddev = 0.1):
-    initial = tf.truncated_normal(shape, stddev, dtype=tf.float32)
+    initial = tf.truncated_normal(shape=shape, stddev=stddev, dtype=tf.float32)
     return tf.Variable(initial_value=initial, dtype=tf.float32, name=name_str)
 
 def BiasesVariable(shape, name_str, init_value):
     initial = tf.constant(init_value, shape=shape)
-    return tf.Variable(initial, dtype=tf.float32, name = name_str)
+    return tf.Variable(initial_value=initial, dtype=tf.float32, name = name_str)
 
 # 卷积层不做降采样
 def Conv2d(x, W, b, stride=1, padding='SAME', activation=tf.nn.relu, act_name='relu'):
@@ -134,7 +134,7 @@ if __name__ == '__main__':
         with tf.name_scope('Inputs'):
             images_holder = tf.placeholder(tf.float32, [batch_size, image_size, image_size, image_channel],
                                            name='images')
-            labels_holder = tf.placeholder(tf.int32, [batch_size], name='labels')
+            labels_holder = tf.placeholder(tf.int32, [batch_size], name='labels')# 0 ~ 9的数字
 
         #前向推断
         with tf.name_scope('Inference'):
@@ -143,7 +143,8 @@ if __name__ == '__main__':
         #定义损失层
         with tf.name_scope('Loss'):
             # 因为cifar10不是one-hot编码的，所以不能使用softmax，而sparse内部会进行one-hot编码
-            cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels_holder, logits=logits)
+            labels = tf.cast( labels_holder, tf.int64 )
+            cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels, logits=logits, name='cross_entropy_per_example')
             cross_entropy_mean = tf.reduce_mean(cross_entropy)
             total_loss = cross_entropy_mean
 
@@ -193,11 +194,13 @@ if __name__ == '__main__':
             for epoch in range(training_epochs):
                 for batch_idx in range(total_batches):
                     images_batch, label_batch = sess.run([images_train, labels_train])
+                    # print(label_batch)
                     _, loss_value = sess.run([train_op, total_loss], feed_dict={images_holder: images_batch,
                                                                                 labels_holder: label_batch,
                                                                                 learning_rate:learning_rate_init})
                     training_step = sess.run(global_step)
                     if training_step % display_step == 0:
+
                         predictions = sess.run([top_K_op], feed_dict={images_holder: images_batch,
                                                                       labels_holder : label_batch})
                         batch_accuracy = np.sum(predictions) / batch_size
@@ -224,7 +227,7 @@ if __name__ == '__main__':
             print('--------->Accuracy on Test Examples: ', accuracy_score)
             results_list.append(['Accuracy on Test Examples: ', accuracy_score])
 
-        results_file = open('../logs/SummaryFiles/results_0111020601.csv', 'w', newline='')
-        csv_writer = csv.writer(results_file, dialect='excel')
-        for row in results_list:
-            csv_writer.writerow(row)
+            results_file = open('../logs/SummaryFiles/result_0111020601.csv', 'w', newline='')
+            csv_writer = csv.writer(results_file, dialect='excel')
+            for row in results_list:
+                csv_writer.writerow(row)
