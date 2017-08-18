@@ -198,7 +198,7 @@ if __name__ == '__main__':
             print("Testing Accuracy:", test_accuracy)
             results_list.append(['test step', 'loss', test_loss, 'accuracy', test_accuracy])
 
-            results_file = open('../logs/SummaryFiles/result_0111020501.csv', 'w', newline='')
-            csv_writer = csv.writer(results_file, dialect='excel')
-            for row in results_list:
-                csv_writer.writerow(row)
+            # results_file = open('../logs/SummaryFiles/result_0111020501.csv', 'w', newline='')
+            # csv_writer = csv.writer(results_file, dialect='excel')
+            # for row in results_list:
+            #     csv_writer.writerow(row)

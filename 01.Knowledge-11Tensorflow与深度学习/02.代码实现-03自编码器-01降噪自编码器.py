@@ -8,65 +8,19 @@ from tensorflow.examples.tutorials.mnist import input_data
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+N_INPUT = 784
+N_HIDDEN = 200
+N_SCALE = 0.01
+LEARNING_RATE_INIT = 0.01
+
+training_epochs = 20
+batch_size = 128
+display_step = 1
+
 def xavier_init(fan_in, fan_out, constant = 1):
     low = -constant * np.sqrt(6.0 / (fan_in + fan_out))
     high = constant * np.sqrt(6.0 / (fan_in + fan_out))
     return tf.random_uniform((fan_in, fan_out), minval=low, maxval=high, dtype=tf.float32)
-
-class AdditiveGaussianNoiseAutoEncoder(object):
-    def __init__(self, n_input, n_hidden, n_transfer = tf.nn.softplus,
-                 optimizer = tf.train.AdamOptimizer(), scale = 0.1):
-        self.n_input = n_input
-        self.n_hidden = n_hidden
-        self.transfer = n_transfer
-        self.scale = tf.placeholder(tf.float32)
-        self.training_scale = scale
-        self.weights = dict()
-
-        with tf.name_scope('RawInput'):
-            self.x = tf.placeholder(tf.float32, [None, self.n_input])
-
-        with tf.name_scope('NosieAdder'):
-            self.scale = tf.placeholder(tf.float32)#噪声的方差尺度
-            self.noise_x = self.x + self.scale * tf.random_normal((self.n_input,))# 加噪声
-
-        with tf.name_scope('Encoder'):
-            #使用Xavier进行初始化
-            self.weights['w1'] = tf.Variable(xavier_init(self.n_input, self.n_hidden), name='weight1')
-            self.weights['b1'] = tf.Variable(tf.zeros([self.n_hidden], dtype=tf.float32), name='bias1')
-            self.hidden = n_transfer(tf.add(tf.matmul(self.noise_x, self.weights['w1']), self.weights['b1'])) # 隐藏层输出
-
-        with tf.name_scope('Reconstruction'):
-            self.weights['w2'] = tf.Variable(tf.zeros([self.n_hidden, self.n_input], dtype=tf.float32), name='weight2')
-            self.weights['b2'] = tf.Variable(tf.zeros([self.n_input], dtype=tf.float32), name='bias2')
-            self.reconstruction = tf.add(tf.matmul(self.hidden, self.weights['w2']), self.weights['b2'])
-
-        with tf.name_scope('Loss'):
-            self.cost = 0.5 * tf.reduce_sum(tf.pow(tf.subtract(self.reconstruction, self.x), 2))
-
-        with tf.name_scope('Train'):
-            self.optimizer = tf.train.AdamOptimizer(learning_rate=0.01).minimize(self.cost)
-
-        init = tf.global_variables_initializer()
-        self.sess = tf.Session()
-        self.sess.run(init)
-    def partial_fit(self, X):
-        cost, opt = self.sess.run((self.cost, self.optimizer), feed_dict={self.x : X, self.scale:self.training_scale})
-        return cost
-    def calc_total_cost(self,X):
-        return self.sess.run(self.cost, feed_dict={self.x : X, self.scale : self.training_scale})
-    def transform(self,X):
-        return self.sess.run(self.hidden, feed_dict={self.x : X, self.scale : self.training_scale})
-    def generate(self, hidden=None):
-        if hidden == None:
-            hidden = np.random.normal(size=self.weights['b1'])
-        return self.sess.run(self.reconstruction, feed_dict={self.hidden : hidden})
-    def reconstruction(self, X):
-        return self.sess.run(self.reconstruction, feed_dict={self.x : X, self.scale : self.training_scale})
-    def getWeights(self):
-        return self.sess.run(self.weights['w1'])
-    def getBiases(self):
-        return self.sess.run(self.weights['b1'])
 
 #0均值，标准差为1
 def standard_scale(X_train, X_test):
@@ -79,29 +33,49 @@ def get_random_block_from_data(data, batch_size):
     start_index = np.random.randint(0, len(data) - batch_size)
     return data[start_index:(start_index + batch_size)]
 
-mnist = input_data.read_data_sets('../MNIST_data/', one_hot = True)
-X_train, X_test = standard_scale(mnist.train.images, mnist.test.images)
-n_samples = int(mnist.train.num_examples)
-training_epochs = 20
-batch_size = 128
-display_step = 1
-AGN_AC = AdditiveGaussianNoiseAutoEncoder(n_input=784, n_hidden=200, n_transfer=tf.nn.softplus,
-                                          optimizer=tf.train.AdamOptimizer(learning_rate=0.01),
-                                          scale=0.01)
+if __name__ == '__main__':
+    with tf.name_scope("Inputs"):
+        image_holder = tf.placeholder(tf.float32, [None, N_INPUT])
+    with tf.name_scope('NosieAdder'):
+        scale_holder = tf.placeholder(tf.float32)
+        noise_x = image_holder + scale_holder * tf.random_normal((N_INPUT,))
+    with tf.name_scope('Encoder'):
+        weights1 = tf.Variable(xavier_init(N_INPUT, N_HIDDEN), name='weight1')
+        bias1 = tf.Variable(tf.zeros([N_HIDDEN], dtype=tf.float32), name='bias1')
+        hidden = tf.nn.softplus(tf.add(tf.matmul(noise_x, weights1), bias1))
+    with tf.name_scope('Reconstruction'):
+        weights2 = tf.Variable(tf.zeros([N_HIDDEN, N_INPUT], dtype=tf.float32), name='weight2')
+        bias2 = tf.Variable(tf.zeros([N_INPUT], dtype=tf.float32), name='bias2')
+        reconstruction = tf.add(tf.matmul(hidden, weights2), bias2)
+    with tf.name_scope('Loss'):
+        Loss = 0.5 * tf.reduce_sum(tf.pow(tf.subtract(reconstruction, image_holder), 2))
+    with tf.name_scope('Train'):
+        Train = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE_INIT).minimize(loss=Loss)
 
-for epoch in range(training_epochs):
-    avg_cost = 0
-    total_batch = int(n_samples / batch_size)
-    for i in range(total_batch):
-        batch_xs = get_random_block_from_data(X_train, batch_size)
-        cost = AGN_AC.partial_fit(batch_xs)
-        avg_cost += cost / batch_size
-    avg_cost /= total_batch
+    # print('把计算图写入事件文件，在TensorBoard里面查看')
+    # writer = tf.summary.FileWriter(logdir='../logs', graph=AGN_AC.sess.graph)
+    # writer.close()
 
-    if epoch % display_step == 0:
-        print("epoch : %04d, cost = %.9f" % (epoch + 1, avg_cost))
+    init = tf.global_variables_initializer()
+    with tf.Session() as sess:
+        sess.run(init)
+        mnist = input_data.read_data_sets('../Total_Data/MNIST_data/', one_hot = True)
+        X_train, X_test = standard_scale(mnist.train.images, mnist.test.images)
+        n_samples = int(mnist.train.num_examples)
 
-print("Total cost : ", str(AGN_AC.calc_total_cost(X_test)))
-# print('把计算图写入事件文件，在TensorBoard里面查看')
-# writer = tf.summary.FileWriter(logdir='../logs', graph=AGN_AC.sess.graph)
-# writer.close()
+        for epoch in range(training_epochs):
+            avg_cost = 0
+            total_batch = int(n_samples / batch_size)
+            for i in range(total_batch):
+                batch_xs = get_random_block_from_data(X_train, batch_size)
+                cost, opt = sess.run((Loss, Train), feed_dict={image_holder : batch_xs, scale_holder:N_SCALE})
+                avg_cost += cost / batch_size
+            avg_cost /= total_batch
+
+            if epoch % display_step == 0:
+                print("epoch : %04d, cost = %.9f" % (epoch + 1, avg_cost))
+        totalLoss = sess.run(Loss, feed_dict={image_holder: X_test, scale_holder : N_SCALE})
+        print("Total cost : ", str(totalLoss))
+
+
+

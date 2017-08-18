@@ -86,7 +86,7 @@ if __name__ == '__main__':
         print('把计算图写入事件文件，在TensorBoard里面查看')
         writer = tf.summary.FileWriter(logdir='../logs', graph=tf.get_default_graph())
         writer.flush()
-        mnist = input_data.read_data_sets('../MNIST_data/', one_hot=True)
+        mnist = input_data.read_data_sets('../Total_Data/MNIST_data/', one_hot=True)
         with tf.Session() as sess:
             sess.run(init)
             total_batch = int(mnist.train.num_examples / batch_size)
