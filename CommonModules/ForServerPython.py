@@ -192,7 +192,21 @@ with tf.Graph().as_default():
                           ", Training Accuracy= " + "{:.5f}".format(batch_accuracy))
 
         print('训练完毕')
+        print('==>>>>>>>>>>==开始在测试集上评估模型==<<<<<<<<<<==')
+        total_batches = int(num_examples_per_epoch_for_eval / batch_size)
+        total_examples = total_batches * batch_size
+        print('Per batch Size: ', batch_size)
+        print('Test sample Count Per Epoch: ', total_examples)
+        print('Total batch Count Per Epoch: ', total_batches)
 
+        correct_predicted = 0
+        for test_step in range(total_batches):
+            images_batch, label_batch = sess.run([images_test, labels_test])
+            predictions = sess.run([top_K_op], feed_dict={images_holder: images_batch,
+                                                          labels_holder: label_batch})
+            correct_predicted += np.sum(predictions)
+        accuracy_score = correct_predicted / total_examples
+        print('--------->Accuracy on Test Examples: ', accuracy_score)
 
 
 
