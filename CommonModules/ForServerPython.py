@@ -177,9 +177,9 @@ with tf.Graph().as_default():
             for batch_idx in range(num_batches_per_epoch):
                 images_batch, labels_batch = sess.run([images_train, labels_train])
                 _, loss_value = sess.run([train_op, total_loss_op],
-                                                   feed_dict={images_holder: images_batch,
-                                                              labels_holder:labels_batch,
-                                                              learning_rate:learning_rate_init})
+                                         feed_dict={images_holder: images_batch,
+                                                    labels_holder:labels_batch,
+                                                    learning_rate:learning_rate_init})
                 training_step = sess.run(global_step)
                 if training_step % display_step == 0 :
                     predictions = sess.run([top_K_op], feed_dict={images_holder:images_batch,
