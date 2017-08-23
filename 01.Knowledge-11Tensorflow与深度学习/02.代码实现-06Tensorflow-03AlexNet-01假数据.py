@@ -1,3 +1,6 @@
+'''
+训练集上的准确度可以达到100%，但是测试集上的准确度确实0
+'''
 import numpy as np
 import tensorflow as tf
 import os
