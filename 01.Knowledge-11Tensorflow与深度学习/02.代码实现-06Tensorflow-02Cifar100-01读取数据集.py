@@ -41,7 +41,7 @@ def get_distored_train_batch(data_dir, batch_size):
     if not data_dir:
         raise ValueError('Please supply a data_dir')
 
-    images, labels = cifar_input.distorted_inputs(cifar10or20or100=n_classes,
+    images, labels = cifar_input.distorted_inputs(cifar10or20or100=cifar10or20or100,
                                                   data_dir=data_dir,
                                                   batch_size=batch_size)
     return images, labels #labels没有进行one-hot编码
@@ -50,7 +50,7 @@ def get_undistorted_eval_batch(data_dir, eval_data, batch_size):
     if not data_dir:
         raise ValueError('Please supply a data_dir')
 
-    images, labels = cifar_input.inputs(cifar10or20or100=n_classes,
+    images, labels = cifar_input.inputs(cifar10or20or100=cifar10or20or100,
                                         eval_data=eval_data,
                                                   data_dir=data_dir,
                                                   batch_size=batch_size)
@@ -254,7 +254,7 @@ with tf.Graph().as_default():
         print('--------->Accuracy on Test Examples: ', accuracy_score)
         results_list.append(['Accuracy on Test Examples: ', accuracy_score])
 
-        results_file = open('../logs/SummaryFiles/result_0111020601_20.csv', 'w', newline='')
-        csv_writer = csv.writer(results_file, dialect='excel')
-        for row in results_list:
-            csv_writer.writerow(row)
+        # results_file = open('../logs/SummaryFiles/result_0111020601_20.csv', 'w', newline='')
+        # csv_writer = csv.writer(results_file, dialect='excel')
+        # for row in results_list:
+        #     csv_writer.writerow(row)
