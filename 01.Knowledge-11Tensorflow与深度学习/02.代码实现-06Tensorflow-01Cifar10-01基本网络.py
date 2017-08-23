@@ -227,7 +227,7 @@ if __name__ == '__main__':
             print('--------->Accuracy on Test Examples: ', accuracy_score)
             results_list.append(['Accuracy on Test Examples: ', accuracy_score])
 
-            results_file = open('../logs/SummaryFiles/result_0111020601.csv', 'w', newline='')
+            results_file = open('../logs/SummaryFiles/02.代码实现-06Tensorflow-02Cifar100-01读取数据集.csv', 'w', newline='')
             csv_writer = csv.writer(results_file, dialect='excel')
             for row in results_list:
                 csv_writer.writerow(row)

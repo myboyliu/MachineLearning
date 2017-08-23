@@ -207,7 +207,7 @@ if __name__ == '__main__':
             print("Testing Accuracy:", test_accuracy)
             results_list.append(['test step', 'loss', test_loss, 'accuracy', test_accuracy])
 
-            results_file = open('../logs/SummaryFiles/result_0111020502.csv', 'w', newline='')
+            results_file = open('../logs/SummaryFiles/02.代码实现-05简单卷积网络-02两个全连接层的卷积神经网络.csv', 'w', newline='')
             csv_writer = csv.writer(results_file, dialect='excel')
             for row in results_list:
                 csv_writer.writerow(row)
