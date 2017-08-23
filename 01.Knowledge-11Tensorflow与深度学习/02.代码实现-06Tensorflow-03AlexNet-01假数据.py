@@ -4,7 +4,7 @@ import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-learning_rate_init = 0.01
+learning_rate_init = 0.001
 num_examples_per_epoch_for_train = 1000
 num_examples_per_epoch_for_eval = 500
 training_epochs = 10

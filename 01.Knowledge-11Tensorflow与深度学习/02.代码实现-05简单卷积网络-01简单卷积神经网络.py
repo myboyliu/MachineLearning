@@ -120,7 +120,7 @@ if __name__ == '__main__':
         #定义优化训练层
         with tf.name_scope('Train'):
             learning_rate = tf.placeholder(tf.float32)
-            optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
+            optimizer = tf.train.RMSPropOptimizer(learning_rate=learning_rate)
             global_step = tf.Variable(0, name='global_step', trainable=False, dtype=tf.int64)
             # optimizer = tf.train.AdagradDAOptimizer(learning_rate=learning_rate, global_step=global_step)
             # optimizer = tf.train.AdadeltaOptimizer(learning_rate=learning_rate)
