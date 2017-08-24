@@ -108,7 +108,7 @@ def Inference(images_holder):
         conv4_out = Conv2d(conv3_out, weights, biases, stride=1, padding='SAME')
         print_activations(conv4_out)
 
-    with tf.name_scope('Conv2d_5'): # 3 * 3, 384个， 步长1
+    with tf.name_scope('Conv2d_5'): # 3 * 3, 256个， 步长1
         weights = WeightsVariable(shape=[3,3,conv4_kernel_num, conv5_kernel_num], name_str='weights', stddev=1e-1)
         biases = BiasesVariable(shape=[conv5_kernel_num], name_str='biases', init_value=0.0)
         conv5_out = Conv2d(conv4_out, weights, biases, stride=1, padding='SAME')
