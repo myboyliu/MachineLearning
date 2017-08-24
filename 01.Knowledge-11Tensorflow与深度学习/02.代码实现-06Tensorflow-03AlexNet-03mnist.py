@@ -23,9 +23,9 @@ import tensorflow as tf
 import numpy as np
 from tensorflow.examples.tutorials.mnist import input_data
 
-batch_size = 50
+batch_size = 100
 training_epochs = 2
-display_step = 5
+display_step = 10
 def WeightsVariable(shape, stddev, name):
     init_value = tf.truncated_normal(shape=shape, stddev=stddev, dtype=tf.float32)
     return tf.Variable(initial_value=init_value, dtype=tf.float32, name=name)
@@ -164,7 +164,7 @@ with tf.Session() as sess:
             if training_step % display_step == 0:
                 acc = sess.run(accuracy, feed_dict={images_holder: batch_x, labels_holder: batch_y})
                 loss = sess.run(total_loss, feed_dict={images_holder: batch_x, labels_holder: batch_y})
-                print("Training Step: " + str(training_step) +
+                print("Training Epoch:"+ str(epoch) +", Training Step: " + str(training_step) +
                       ", Training Loss= " + "{:.6f}".format(loss) +
                       ", Training Accuracy= " + "{:.5f}".format(acc))
 
@@ -172,5 +172,5 @@ with tf.Session() as sess:
     test_samples_count = mnist.test.num_examples
     test_loss, test_accuracy = EvaluateModelOnDataset(sess, mnist.test.images, mnist.test.labels)
     print("Testing Samples Count:", test_samples_count)
-    print("Testing Loss:", test_loss)
+    print("Testing Loss:", np.mean(test_loss))
     print("Testing Accuracy:", test_accuracy)

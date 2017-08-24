@@ -5,6 +5,7 @@ import numpy as np
 import tensorflow as tf
 import os
 import cifar_input
+import csv
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -15,8 +16,8 @@ dataset_dir_cifar10 = '../Total_Data/Cifar10_data/cifar-10-batches-bin'
 dataset_dir_cifar100= '../Total_Data/Cifar100_data/cifar-100-binary-bin'
 
 learning_rate_init = 0.001
-training_epochs = 10
-batch_size = 32
+training_epochs = 5
+batch_size = 100
 display_step = 1
 conv1_kernel_num = 96
 conv2_kernel_num = 256
@@ -195,6 +196,9 @@ with tf.Graph().as_default():
         tf.summary.image('images', images_test, max_outputs=9)
 
     init_op = tf.global_variables_initializer()
+    results_list = list()
+    results_list.append(['TrainStep','TrainLoss','TrainStep','TrainAccuracy'])
+
     with tf.Session() as sess:
         sess.run(init_op)
         tf.train.start_queue_runners()
@@ -220,6 +224,7 @@ with tf.Graph().as_default():
                           ", Training Step: " + str(training_step) +
                           ", Training Loss= " + "{:.6f}".format(loss_value) +
                           ", Training Accuracy= " + "{:.5f}".format(batch_accuracy))
+                    results_list.append([training_step, loss_value, training_step, batch_accuracy])
 
         print('训练完毕')
         print('==>>>>>>>>>>==开始在测试集上评估模型==<<<<<<<<<<==')
@@ -238,6 +243,10 @@ with tf.Graph().as_default():
         accuracy_score = correct_predicted / total_examples
         print('--------->Accuracy on Test Examples: ', accuracy_score)
         # results_list.append(['Accuracy on Test Examples: ', accuracy_score])
+        # results_file = open('01.csv', 'w', newline='')
+        # csv_writer = csv.writer(results_file, dialect='excel')
+        # for row in results_list:
+        #     csv_writer.writerow(row)
 
 
 
