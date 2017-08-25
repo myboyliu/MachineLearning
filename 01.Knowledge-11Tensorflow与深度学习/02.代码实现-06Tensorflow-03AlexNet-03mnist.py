@@ -17,6 +17,8 @@ softmax
 对于mnist数据集，图片大小是28*28的，应该与cifar相同的配置
 
 至于线性全连接层的输出，需要看最终有多少个分类来决定
+
+在全连接层可以增加dropout
 '''
 
 import tensorflow as tf

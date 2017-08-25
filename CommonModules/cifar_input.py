@@ -15,7 +15,6 @@ NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 10000 #测试集，评估集
 
 CIFAR10_DATA_URL = 'http://www.cs.toronto.edu/~kriz/ciar-10-binary.tar.gz'
 CIFAR100_DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar_100-binary.tar.gz'
-print('调用我啦...cifar_input...')
 
 def maybe_download_and_extract(data_dir, data_url = CIFAR10_DATA_URL):
     dest_directory = data_dir
@@ -220,3 +219,50 @@ def _generate_image_and_label_batch(image, label, min_queue_examples, batch_size
     tf.summary.image('images', images, max_outputs=9)
 
     return images, tf.reshape(label_batch, [batch_size])
+
+def images(cifar10or20or100, eval_data, data_dir, batch_size, image_size = 32):
+    if cifar10or20or100 == 10:
+        read_cifar = read_cifar10
+        if not eval_data:
+            filenames = [os.path.join(data_dir, 'data_batch_%d.bin' %i) for i in xrange(1, 6)]
+            num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
+        else:
+            filenames = [os.path.join(data_dir, 'test_batch.bin')]
+            num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
+    elif cifar10or20or100 == 20 or cifar10or20or100 == 100:
+        read_cifar = read_cifar100
+        if not eval_data:
+            filenames = [os.path.join(data_dir, 'train.bin')]
+            num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
+        else:
+            filenames = [os.path.join(data_dir, 'test.bin')]
+            num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
+    if cifar10or20or100 ==  10:
+        coarse_or_fine = None
+    elif cifar10or20or100 == 20:
+        coarse_or_fine = 'fine'
+    else:
+        coarse_or_fine = 'coarse'
+
+    for f in filenames:
+        if not tf.gfile.Exists(f):
+            raise ValueError('Failed to find file: ' + f)
+
+    filename_queue = tf.train.string_input_producer(filenames)
+
+    label_bytes = 1
+    height = 32
+    width = 32
+    depth = 3
+    image_bytes = height * width * depth
+    record_bytes = label_bytes + image_bytes
+    reader = tf.FixedLengthRecordReader(record_bytes=record_bytes)
+    key, value = reader.read(filename_queue)
+    record_bytes = tf.decode_raw(value, tf.uint8)
+    label = tf.cast(
+        tf.slice(record_bytes, [0], [label_bytes]), tf.int32)
+    depth_major = tf.reshape(tf.slice(record_bytes, [label_bytes], [image_bytes]),
+                             [depth, height, width])
+    uint8image = tf.transpose(depth_major, [1, 2, 0])
+
+    return uint8image, label
