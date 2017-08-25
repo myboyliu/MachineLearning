@@ -6,4 +6,7 @@
 .idea/
 .vscode/
 *.pyc
+Total_Data/TempData/
 #.ipynb_checkpoints/
+CommonModules/__pycache__/
+Total_Data/data_log/

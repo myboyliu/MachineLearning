@@ -12,8 +12,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 cifar10or20or100 = 10
 num_examples_per_epoch_for_train = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
 num_examples_per_epoch_for_eval = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
-dataset_dir_cifar10 = '../Total_Data/Cifar10_data/cifar-10-batches-bin'
-dataset_dir_cifar100= '../Total_Data/Cifar100_data/cifar-100-binary-bin'
+dataset_dir_cifar10 = '../Total_Data/TempData/cifar-10-batches-bin'
+dataset_dir_cifar100= '../Total_Data/TempData/cifar-100-binary-bin'
 
 learning_rate_init = 0.001
 training_epochs = 5
@@ -33,12 +33,15 @@ image_channel = cifar_input.IMAGE_DEPTH
 if cifar10or20or100 == 10:
     n_classes = cifar_input.NUM_CLASSES_CIFAR10
     dataset_dir = dataset_dir_cifar10
+    cifar_input.maybe_download_and_extract('../Total_Data/TempData', cifar_input.CIFAR10_DATA_URL)
 elif cifar10or20or100 == 20:
     n_classes = cifar_input.NUM_CLASSES_CIFAR20
     dataset_dir = dataset_dir_cifar100
+    cifar_input.maybe_download_and_extract('../Total_Data/TempData', cifar_input.CIFAR100_DATA_URL)
 else:
     n_classes = cifar_input.NUM_CLASSES_CIFAR100
     dataset_dir = dataset_dir_cifar100
+    cifar_input.maybe_download_and_extract('../Total_Data/TempData', cifar_input.CIFAR100_DATA_URL)
 
 def WeightsVariable(shape, name_str, stddev=0.1):
     initial = tf.truncated_normal(shape=shape, stddev=stddev, dtype=tf.float32)

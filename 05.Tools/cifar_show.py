@@ -1,19 +1,43 @@
+import cifar_toTFRecords
+import os
 import numpy as np
-import matplotlib.pyplot as plt
-import cifar_input
-import tensorflow as tf
 from PIL import Image
-cifar10or20or100 = 10
-dataset_dir = '../Total_Data/Cifar10_data/cifar-10-batches-bin'
-image, label = cifar_input.images(cifar10or20or100, eval_data=True, batch_size=1, data_dir=dataset_dir)
+import matplotlib.pyplot as plt
+import tensorflow as tf
+import pickle
 
-init = tf.global_variables_initializer()
+## cifar图片的展示有两种方式
+## 从cifar-10-batches-py里面直接读取
 
+# dataset_dir = '../Total_Data/TempData/cifar-10-batches-py'
+# filenames = [os.path.join(dataset_dir, 'data_batch_%' % i ) for i in range(1,6)]
+# for idx, names in enumerate(filenames):
+#     print(names)
+#     dict = pickle.load(open(names, 'rb'), encoding='bytes')
+#     X = dict[b'data']
+#     Y = dict[b'labels']
+#     X = X.reshape(10000, 3, 32, 32).transpose(0,2,3,1).astype("uint8")
+#     Y = np.array(Y)
+#
+#     fig, axes1 = plt.subplots(5,5,figsize=(3,3))
+#     for j in range(5):
+#         for k in range(5):
+#             axes1[j][k].set_axis_off()
+#             axes1[j][k].imshow(X[j * 5 + k])
+#     plt.show()
+
+filename = 'train_package.tfrecords'
+shape = [32, 32, 3]
+images, labels = cifar_toTFRecords.readFromTFRecords(os.path.join('../Total_Data/cifar-10-batches-tfrecords',
+                                                                  filename), 25, shape)
 with tf.Session() as sess:
-    sess.run(init)
     tf.train.start_queue_runners()
-    # for idx in range(10):
-    image_batch, label_batch = sess.run([image, label])
-
-    plt.imshow(image_batch)
+    image_batch, _ = sess.run([images, labels])
+    print(image_batch[0])
+    fig, axes1 = plt.subplots(5,5,figsize=(3,3))
+    for j in range(5):
+        for k in range(5):
+            axes1[j][k].set_axis_off()
+            axes1[j][k].imshow(image_batch[j * 5 + k])
     plt.show()
+

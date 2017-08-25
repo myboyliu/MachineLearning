@@ -19,8 +19,8 @@ conv2_kernel_num = 64
 fc1_units_num = 1024
 fc2_units_num = 512
 
-dataset_dir_cifar10 = '../Total_Data/Cifar10_data/cifar-10-batches-bin'
-dataset_dir_cifar100= '../Total_Data/Cifar100_data/cifar-100-binary-bin'
+dataset_dir_cifar10 = '../Total_Data/TempData/cifar-10-batches-bin'
+dataset_dir_cifar100= '../Total_Data/TempData/cifar-100-binary-bin'
 num_examples_per_epoch_for_train = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
 num_examples_per_epoch_for_eval = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
 image_size = cifar_input.IMAGE_SIZE
@@ -203,6 +203,7 @@ with tf.Graph().as_default():
 
     with tf.Session() as sess:
         sess.run(init_op)
+        cifar_input.maybe_download_and_extract('../Total_Data/TempData', cifar_input.CIFAR10_DATA_URL)
         tf.train.start_queue_runners()
         print('==>>>>>>>>>>开始在训练集上训练模型<<<<<<<<<<==')
         num_batches_per_epoch = int(num_examples_per_epoch_for_train / batch_size) # 500

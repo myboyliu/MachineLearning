@@ -29,7 +29,7 @@ training_epochs = 1
 batch_size = 100
 display_step = 10
 
-dataset_dir = '../Total_Data/Cifar10_data'
+dataset_dir = '../Total_Data/TempData/'
 num_examples_per_epoch_for_train = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN # 50000
 num_examples_per_epoch_for_eval = cifar_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
 image_size = cifar_input.IMAGE_SIZE
@@ -139,6 +139,7 @@ def get_undistored_eval_batch(eval_data, data_dir, batch_size):
     return images, labels
 
 if __name__ == '__main__':
+    cifar_input.maybe_download_and_extract('../Total_Data/TempData', cifar_input.CIFAR10_DATA_URL)
     with tf.Graph().as_default():
         # 输入
         with tf.name_scope('Inputs'):

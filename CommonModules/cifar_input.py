@@ -13,8 +13,8 @@ NUM_CLASSES_CIFAR100 = 100
 NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 50000 #训练集
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 10000 #测试集，评估集
 
-CIFAR10_DATA_URL = 'http://www.cs.toronto.edu/~kriz/ciar-10-binary.tar.gz'
-CIFAR100_DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar_100-binary.tar.gz'
+CIFAR10_DATA_URL     = 'http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz'
+CIFAR100_DATA_URL    = 'http://www.cs.toronto.edu/~kriz/cifar_100-binary.tar.gz'
 
 def maybe_download_and_extract(data_dir, data_url = CIFAR10_DATA_URL):
     dest_directory = data_dir
@@ -33,82 +33,10 @@ def maybe_download_and_extract(data_dir, data_url = CIFAR10_DATA_URL):
         print('Successfully downloaded', filename, statinfo.st_size, 'bytes.')
     tarfile.open(filepath, 'r:gz').extractall(dest_directory)
 
-def read_cifar10(filename_queue, coarse_or_fine=None):
-    class CIFAR10Record(object):
-        pass
-    result = CIFAR10Record()
-    result.height = IMAGE_SIZE
-    result.width = IMAGE_SIZE
-    result.depth = IMAGE_DEPTH
-
-    '''
-    数据格式
-    label是1个字节，数据是3072个字节=32*32*3
-    <1 x label><3072 x pixel>
-    ...
-    <1 x label><3072 x pixel>
-    '''
-    label_bytes = 1 #类别标签字节数
-    image_bytes = result.height * result.width * result.depth
-    record_bytes = label_bytes + image_bytes
-
-    #创建一个固定长度的读取器，读取一个样本记录的所有字节
-    reader = tf.FixedLengthRecordReader(record_bytes=record_bytes, header_bytes=0, footer_bytes=0)
-    result.key, value = reader.read(filename_queue)
-    record_bytes = tf.decode_raw(value, tf.uint8) # 无符号8位，正好是一个字节
-    result.label = tf.cast(tf.strided_slice(record_bytes, [0], [label_bytes]), tf.int32)
-    depth_major = tf.reshape(tf.strided_slice(record_bytes, [label_bytes], [label_bytes + image_bytes]),
-                             [result.depth, result.height, result.width]) # 这种顺序，是Caffee的顺序
-    # 将图像的空间位置和深度位置由[depth, height, width]转换成[height, width, depth]
-    result.uint8image = tf.transpose(depth_major, [1,2,0])
-
-    return result
-
-# coarse_or_fine:区别粗细分类，也就是区分是按照20读取，还是100类读取
-def read_cifar100(filename_queue, coarse_or_fine='fine'):
-    class CIFAR100Record(object):
-        pass
-    result = CIFAR100Record()
-    result.height = IMAGE_SIZE
-    result.width = IMAGE_SIZE
-    result.depth = IMAGE_DEPTH
-
-    '''
-    数据格式
-    第一个字节是粗略分类标签
-    第二个字节是精细分类标签
-    剩下的是图片像素
-    '''
-    coarse_label_bytes = 1
-    fine_label_bytes = 1
-    image_bytes = result.height * result.width * result.depth
-    record_bytes = coarse_label_bytes + fine_label_bytes + image_bytes
-
-    #创建一个固定长度的读取器，读取一个样本记录的所有字节
-    reader = tf.FixedLengthRecordReader(record_bytes=record_bytes, header_bytes=0, footer_bytes=0)
-    result.key, value = reader.read(filename_queue)
-
-    record_bytes = tf.decode_raw(value, tf.uint8) # 无符号8位，正好是一个字节
-
-    coarse_label = tf.cast(tf.strided_slice(record_bytes, [0], [coarse_label_bytes]), tf.int32)
-    fine_label = tf.cast(tf.strided_slice(record_bytes, [coarse_label_bytes], [coarse_label_bytes + fine_label_bytes]), tf.int32)
-
-    if coarse_or_fine == 'fine':
-        result.label = fine_label # 100个精细分类
-    else:
-        result.label = coarse_label #20个粗略分类
-
-    depth_major = tf.reshape(tf.strided_slice(record_bytes, [coarse_label_bytes + fine_label_bytes], [coarse_label_bytes + fine_label_bytes + image_bytes]),
-                             [result.depth, result.height, result.width]) # 这种顺序，是Caffee的顺序
-    # 将图像的空间位置和深度位置由[depth, height, width]转换成[height, width, depth]
-    result.uint8image = tf.transpose(depth_major, [1,2,0])
-
-    return result
-
 # 即可以读取训练集，也可以读取测试集，但是一般用来读取测试集,也就是eval_data一般是为True的
 def inputs(cifar10or20or100, eval_data, data_dir, batch_size, image_size = 32):
     if cifar10or20or100 == 10:
-        read_cifar = read_cifar10
+        read_cifar = _read_cifar10
         if not eval_data:
             filenames = [os.path.join(data_dir, 'data_batch_%d.bin' %i) for i in xrange(1, 6)]
             num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
@@ -116,7 +44,7 @@ def inputs(cifar10or20or100, eval_data, data_dir, batch_size, image_size = 32):
             filenames = [os.path.join(data_dir, 'test_batch.bin')]
             num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
     elif cifar10or20or100 == 20 or cifar10or20or100 == 100:
-        read_cifar = read_cifar100
+        read_cifar = _read_cifar100
         if not eval_data:
             filenames = [os.path.join(data_dir, 'train.bin')]
             num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
@@ -159,15 +87,15 @@ def inputs(cifar10or20or100, eval_data, data_dir, batch_size, image_size = 32):
 def distorted_inputs(cifar10or20or100, data_dir, batch_size, image_size = 32):
     if cifar10or20or100 == 10:
         filenames = [os.path.join(data_dir, 'data_batch_%d.bin' % i) for i in xrange(1, 6)]
-        read_cifar = read_cifar10
+        read_cifar = _read_cifar10
         coarse_or_fine = None
     elif cifar10or20or100 == 20:
         filenames = [os.path.join(data_dir, 'train.bin')]
-        read_cifar = read_cifar100
+        read_cifar = _read_cifar100
         coarse_or_fine = 'coarse'
     else:
         filenames = [os.path.join(data_dir, 'train.bin')]
-        read_cifar = read_cifar100
+        read_cifar = _read_cifar100
         coarse_or_fine = 'fine'
 
     for f in filenames:
@@ -204,6 +132,78 @@ def distorted_inputs(cifar10or20or100, data_dir, batch_size, image_size = 32):
     print('Filling queue with %d CIFAR images before starting to train. THis will take a few minutes.' % min_queue_examples)
     return _generate_image_and_label_batch(float_image, read_input.label, min_queue_examples, batch_size, shuffle=True)
 
+def _read_cifar10(filename_queue, coarse_or_fine=None):
+    class CIFAR10Record(object):
+        pass
+    result = CIFAR10Record()
+    result.height = IMAGE_SIZE
+    result.width = IMAGE_SIZE
+    result.depth = IMAGE_DEPTH
+
+    '''
+    数据格式
+    label是1个字节，数据是3072个字节=32*32*3
+    <1 x label><3072 x pixel>
+    ...
+    <1 x label><3072 x pixel>
+    '''
+    label_bytes = 1 #类别标签字节数
+    image_bytes = result.height * result.width * result.depth
+    record_bytes = label_bytes + image_bytes
+
+    #创建一个固定长度的读取器，读取一个样本记录的所有字节
+    reader = tf.FixedLengthRecordReader(record_bytes=record_bytes, header_bytes=0, footer_bytes=0)
+    result.key, value = reader.read(filename_queue)
+    record_bytes = tf.decode_raw(value, tf.uint8) # 无符号8位，正好是一个字节
+    result.label = tf.cast(tf.strided_slice(record_bytes, [0], [label_bytes]), tf.int32)
+    depth_major = tf.reshape(tf.strided_slice(record_bytes, [label_bytes], [label_bytes + image_bytes]),
+                             [result.depth, result.height, result.width]) # 这种顺序，是Caffee的顺序
+    # 将图像的空间位置和深度位置由[depth, height, width]转换成[height, width, depth]
+    result.uint8image = tf.transpose(depth_major, [1,2,0])
+
+    return result
+
+# coarse_or_fine:区别粗细分类，也就是区分是按照20读取，还是100类读取
+def _read_cifar100(filename_queue, coarse_or_fine='fine'):
+    class CIFAR100Record(object):
+        pass
+    result = CIFAR100Record()
+    result.height = IMAGE_SIZE
+    result.width = IMAGE_SIZE
+    result.depth = IMAGE_DEPTH
+
+    '''
+    数据格式
+    第一个字节是粗略分类标签
+    第二个字节是精细分类标签
+    剩下的是图片像素
+    '''
+    coarse_label_bytes = 1
+    fine_label_bytes = 1
+    image_bytes = result.height * result.width * result.depth
+    record_bytes = coarse_label_bytes + fine_label_bytes + image_bytes
+
+    #创建一个固定长度的读取器，读取一个样本记录的所有字节
+    reader = tf.FixedLengthRecordReader(record_bytes=record_bytes, header_bytes=0, footer_bytes=0)
+    result.key, value = reader.read(filename_queue)
+
+    record_bytes = tf.decode_raw(value, tf.uint8) # 无符号8位，正好是一个字节
+
+    coarse_label = tf.cast(tf.strided_slice(record_bytes, [0], [coarse_label_bytes]), tf.int32)
+    fine_label = tf.cast(tf.strided_slice(record_bytes, [coarse_label_bytes], [coarse_label_bytes + fine_label_bytes]), tf.int32)
+
+    if coarse_or_fine == 'fine':
+        result.label = fine_label # 100个精细分类
+    else:
+        result.label = coarse_label #20个粗略分类
+
+    depth_major = tf.reshape(tf.strided_slice(record_bytes, [coarse_label_bytes + fine_label_bytes], [coarse_label_bytes + fine_label_bytes + image_bytes]),
+                             [result.depth, result.height, result.width]) # 这种顺序，是Caffee的顺序
+    # 将图像的空间位置和深度位置由[depth, height, width]转换成[height, width, depth]
+    result.uint8image = tf.transpose(depth_major, [1,2,0])
+
+    return result
+
 # 构造样本队列，产生一个批次的图像和标签，image只是一个图像
 # 创建一个队列，随机打乱样本，然后读取batch_size这么多批次的图片和标签
 def _generate_image_and_label_batch(image, label, min_queue_examples, batch_size, shuffle):
@@ -220,49 +220,3 @@ def _generate_image_and_label_batch(image, label, min_queue_examples, batch_size
 
     return images, tf.reshape(label_batch, [batch_size])
 
-def images(cifar10or20or100, eval_data, data_dir, batch_size, image_size = 32):
-    if cifar10or20or100 == 10:
-        read_cifar = read_cifar10
-        if not eval_data:
-            filenames = [os.path.join(data_dir, 'data_batch_%d.bin' %i) for i in xrange(1, 6)]
-            num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
-        else:
-            filenames = [os.path.join(data_dir, 'test_batch.bin')]
-            num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
-    elif cifar10or20or100 == 20 or cifar10or20or100 == 100:
-        read_cifar = read_cifar100
-        if not eval_data:
-            filenames = [os.path.join(data_dir, 'train.bin')]
-            num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
-        else:
-            filenames = [os.path.join(data_dir, 'test.bin')]
-            num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
-    if cifar10or20or100 ==  10:
-        coarse_or_fine = None
-    elif cifar10or20or100 == 20:
-        coarse_or_fine = 'fine'
-    else:
-        coarse_or_fine = 'coarse'
-
-    for f in filenames:
-        if not tf.gfile.Exists(f):
-            raise ValueError('Failed to find file: ' + f)
-
-    filename_queue = tf.train.string_input_producer(filenames)
-
-    label_bytes = 1
-    height = 32
-    width = 32
-    depth = 3
-    image_bytes = height * width * depth
-    record_bytes = label_bytes + image_bytes
-    reader = tf.FixedLengthRecordReader(record_bytes=record_bytes)
-    key, value = reader.read(filename_queue)
-    record_bytes = tf.decode_raw(value, tf.uint8)
-    label = tf.cast(
-        tf.slice(record_bytes, [0], [label_bytes]), tf.int32)
-    depth_major = tf.reshape(tf.slice(record_bytes, [label_bytes], [image_bytes]),
-                             [depth, height, width])
-    uint8image = tf.transpose(depth_major, [1, 2, 0])
-
-    return uint8image, label
